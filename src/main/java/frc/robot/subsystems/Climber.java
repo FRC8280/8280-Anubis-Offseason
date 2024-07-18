@@ -36,11 +36,12 @@ public class Climber extends SubsystemBase {
   private SparkPIDController m_RightPidController;
 
   private double currentClimberPosition = Constants.Climber.cruitseHeight;
-  private boolean manualClimber = false;
+  //private boolean manualClimber = false;
+    //private boolean climberGoingUp = false;
   private DigitalInput m_leftHallEffectSensor;
   private DigitalInput m_rightHallEffectSensor;
 
-  private boolean climberGoingUp = false;
+
   private static Climber mInstance;
   public static Climber getInstance() {
     if (mInstance == null) {
@@ -97,9 +98,9 @@ public class Climber extends SubsystemBase {
 
   public void IncreasePower()
   {
-    manualClimber = true;
+    //manualClimber = true;
 
-    climberGoingUp = true;
+    //climberGoingUp = true;
     if(m_RightEncoder.getPosition() < Constants.Climber.maxClimberHeight)
       m_rightClimber.set(Constants.Climber.climberPower);
 
@@ -110,8 +111,8 @@ public class Climber extends SubsystemBase {
   public void DecreasePower()
   {
 
-    manualClimber = true;
-    climberGoingUp = false;
+    //manualClimber = true;
+    //climberGoingUp = false;
 
     //if(m_RightEncoder.getPosition() > Constants.Climber.minClimberHeight)
      // m_rightClimber.set(-Constants.Climber.climberPower/4);
@@ -133,26 +134,26 @@ public class Climber extends SubsystemBase {
 
   public void EnableMotorController()
   {
-    manualClimber = false;
+    //manualClimber = false;
   }
 
   public void NoPower()
   {
-    climberGoingUp = false;
+    //climberGoingUp = false;
       m_rightClimber.set(0);
       m_leftClimber.set(0);
   }
 
   public void SetClimberAmpScorePosition()
   {
-    manualClimber = false;
+    //manualClimber = false;
     currentClimberPosition = Constants.Climber.ampScoreHeight;
 
   }
 
    public void SetClimberCruise()
   {
-    manualClimber = false;
+    //manualClimber = false;
     currentClimberPosition = Constants.Climber.cruitseHeight;
 
   }

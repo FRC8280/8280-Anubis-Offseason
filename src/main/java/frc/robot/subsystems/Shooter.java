@@ -37,8 +37,8 @@ public class Shooter extends SubsystemBase {
   }
 
   private ampArmStates ampArmState = ampArmStates.kIntakePositionUp;
-  private boolean m_AmpArmActive = false;
-  private boolean m_StowAmpArm = false;
+  //private boolean m_AmpArmActive = false;
+  //private boolean m_StowAmpArm = false;
   private double currentAmpArmPosition = Constants.Shooter.k_AmpArmScore;
 
   private SparkPIDController m_ampPidController;
@@ -49,17 +49,17 @@ public class Shooter extends SubsystemBase {
   private RelativeEncoder m_topMotorEncoder;
   private RelativeEncoder m_bottomMotorEncoder;
 
-  private RelativeEncoder mEncoder;
+  //private RelativeEncoder mEncoder;
   private final SparkAbsoluteEncoder m_pAbsoluteEncoder; 
 
   private SparkPIDController m_TopPidController;
   private SparkPIDController m_BottomPidController;
 
-  private boolean m_pivotRunning;
+  //private boolean m_pivotRunning;
   private boolean m_shooterRunning;
   public double m_TopShooterMotorSpeed = 0;
   public double m_BottomShooterMotorSpeed = 0;
-  private boolean m_Indexing;
+  //private boolean m_Indexing;
   public double m_Range = Constants.VisionData.NoTarget;
   private boolean m_Override = false;
   private boolean m_DemoMode = false;
@@ -80,8 +80,8 @@ public class Shooter extends SubsystemBase {
   private static final double k_AmpArmD = 0.001;
   private static final double k_AmpArmMaxOutput = 1;
   private static final double k_AmpArmMinOutput = -1;
-  private static final double kAmpArmIz = 0; 
-  private static final double kAmpArmFF = 0; 
+  //private static final double kAmpArmIz = 0; 
+  //private static final double kAmpArmFF = 0; 
 
 
   //Shooter PID
@@ -196,11 +196,11 @@ public class Shooter extends SubsystemBase {
     m_topMotor.burnFlash();
     m_bottomMotor.burnFlash();
 
-    m_pivotRunning = false;
+    //m_pivotRunning = false;
     m_shooterRunning = false;
     //distanceSensor = new TimeOfFlight(40);
 
-    m_Indexing = false;
+    //m_Indexing = false;
     lastPivot = Constants.Shooter.k_ShooterPivotLoaded;
   }
 
@@ -381,8 +381,8 @@ public class Shooter extends SubsystemBase {
   public void SetAmpArmScore()
   {
      currentAmpArmPosition = Constants.Shooter.k_AmpArmScore;  
-     m_AmpArmActive = true;
-     m_StowAmpArm = false;
+     //m_AmpArmActive = true;
+     //m_StowAmpArm = false;
 
      ampArmState = ampArmStates.kScoringPosition;
   }
@@ -392,8 +392,8 @@ public class Shooter extends SubsystemBase {
     m_BarClearTimer.reset();
     m_BarClearTimer.start();
 
-    m_AmpArmActive = true;
-    m_StowAmpArm = false;
+    //m_AmpArmActive = true;
+    //m_StowAmpArm = false;
     ampArmState = ampArmStates.kIntakePositionUp;
     currentAmpArmPosition = Constants.Shooter.k_AmpArmIntakePosition;
   }
@@ -410,8 +410,8 @@ public class Shooter extends SubsystemBase {
   {
       ampArmState = ampArmStates.kStowed;
       currentAmpArmPosition = Constants.Shooter.k_AmpArmHalfWayPoint;
-      m_AmpArmActive = false;
-      m_StowAmpArm = true;
+      //m_AmpArmActive = false;
+      //m_StowAmpArm = true;
   }
   public void ShutDownAmpArm()
   {
@@ -419,8 +419,8 @@ public class Shooter extends SubsystemBase {
       return;
 
      ampArmState = ampArmStates.kStowed;
-     m_AmpArmActive = false;
-     m_StowAmpArm = false;
+     //m_AmpArmActive = false;
+     //m_StowAmpArm = false;
      currentAmpArmPosition = 0;  
      m_ampArmMotor.set(0.0);
   }
@@ -494,7 +494,7 @@ public class Shooter extends SubsystemBase {
   }
   public void IntakeIndexer()
   {
-    m_Indexing = true;
+    //m_Indexing = true;
     m_indexMotor.set(Constants.Shooter.kIndexPower);
   }
 

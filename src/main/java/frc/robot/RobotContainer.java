@@ -66,7 +66,7 @@ public class RobotContainer {
   /* Path follower */
   private Command runAuto = drivetrain.getAutoPath("Tests");
 
-  private final Telemetry logger = new Telemetry(MaxSpeed);
+  //private final Telemetry logger = new Telemetry(MaxSpeed);
 
   public void SetShooterRange(double range)
   {
