@@ -60,7 +60,7 @@ public class Shooter extends SubsystemBase {
   public double m_TopShooterMotorSpeed = 0;
   public double m_BottomShooterMotorSpeed = 0;
   //private boolean m_Indexing;
-  public double m_Range = Constants.VisionData.NoTarget;
+  public double m_Range = Constants.Vision.NoTarget;
   private boolean m_Override = false;
   private boolean m_DemoMode = false;
 
@@ -224,7 +224,7 @@ public class Shooter extends SubsystemBase {
    public void SpinShootingMotorsDynamic()  //Run this to base on range. 
    {
       //I see nothing
-      if(m_Range == Constants.VisionData.NoTarget)
+      if(m_Range == Constants.Vision.NoTarget)
       {  
         SpinShootingMotors(Constants.Shooter.k_ShooterRPM);
         return;
@@ -433,36 +433,6 @@ public class Shooter extends SubsystemBase {
     LOADED
   }
 
- /*  public boolean IndexComplete()
-  {
-    if(m_Indexing && getShooterHasNote())
-    {
-      m_Indexing =false;
-      return true;
-    }  
-    else
-      return false;
-  }*/
-
- /* public boolean getShooterHasNote() {
-
-    if(distanceSensor.getRange() < Constants.Shooter.kNoteDetectionDistance)
-      return true;
-    else 
-      return false; 
-  } */
-
-  /*public boolean getShooterIsAdjusted() {
-
-   if(distanceSensor.getRange() < 70)
-    {
-      //System.out.printf("******Adjusted value over 70******\n");
-      return true;
-    }
-    else 
-      return false;
-  }*/
-
   public void SetShooterAngle(double angle)
   {
     return;
@@ -533,15 +503,6 @@ public void ReverseIndexerLight()
     m_BottomShooterMotorSpeed = 0;
   }
 
-  /*
-  public Boolean AtTargetPivot()
-  {
-    if(java.lang.Math.abs(mEncoder.getPosition() - currentSPivotPosition) > Constants.Shooter.k_PivotMargin)
-      return false;
-
-    return true;
-  }*/
-
   public double CalculateReference(double distance)
   {
 
@@ -582,7 +543,7 @@ public void ReverseIndexerLight()
     
     //auto targeting be calulate reference
     
-    if((m_Range != Constants.VisionData.NoTarget) && !m_Override)
+    if((m_Range != Constants.Vision.NoTarget) && !m_Override)
     { 
         currentSPivotPosition = CalculateReference(m_Range);
        

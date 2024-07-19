@@ -5,21 +5,8 @@
 package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
-
-//import java.util.List;
-//import java.util.Optional;
-
-//import org.photonvision.PhotonCamera;
-
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
-//import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation2d;
-//import edu.wpi.first.math.geometry.Rotation3d;
-//import edu.wpi.first.math.geometry.Translation3d;
-//import edu.wpi.first.math.util.Units;
-//import edu.wpi.first.wpilibj.DriverStation;
-//import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -34,10 +21,10 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
-//import frc.robot.subsystems.Blinkin;
 
 public class RobotContainer {
-
+  public double m_TargetYaw = Constants.Vision.NoTarget;
+  public boolean m_AutoAlign = false;
   public boolean singleDriver = false;
   public boolean demoMode = false;
 
@@ -45,7 +32,7 @@ public class RobotContainer {
   private double MaxAngularRate = 3.0 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
-  private final CommandXboxController joystick = new CommandXboxController(0); // My joystick
+  private final CommandXboxController driver = new CommandXboxController(0); // My joystick
   private final CommandXboxController operator = new CommandXboxController(1);
   public final CommandSwerveDrivetrain drivetrain = TunerConstants.DriveTrain; // My drivetrain
 
@@ -59,14 +46,19 @@ public class RobotContainer {
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
       .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // I want field-centric
                                                                // driving in open loop
-  private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
+  //private final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
   //private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
-  private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
+  //private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
   /* Path follower */
   private Command runAuto = drivetrain.getAutoPath("Tests");
 
   //private final Telemetry logger = new Telemetry(MaxSpeed);
+
+  public void logPosition()
+  {
+    drivetrain.logPosition();
+  }
 
   public void SetShooterRange(double range)
   {
@@ -83,7 +75,7 @@ public class RobotContainer {
 
     XboxController pointer;
     if (singleDriver)
-      pointer = joystick.getHID();
+      pointer = driver.getHID();
     else
       pointer = operator.getHID();
 
@@ -93,11 +85,58 @@ public class RobotContainer {
     return false;
   }
 
+  private boolean rightStickUsed()
+  {
+    XboxController pointer;
+    if (singleDriver)
+      pointer = driver.getHID();
+    else
+      pointer = operator.getHID();
+
+    if(Math.abs(pointer.getRightX()) > 0.1)
+      return true;
+    
+    return false;
+  }
+  private double calculateRotation(){
+
+    //If the auto alignment flag isn't set or their is no target. Simply use the joystick data. 
+    if(!m_AutoAlign && m_TargetYaw == Constants.Vision.NoTarget)
+      return -driver.getRightX();
+
+    double Kp = -0.005f;
+    double min_command = 0.05f;
+
+    double heading_error = -m_TargetYaw;
+    double steering_adjust = 0.0f;
+    if (Math.abs(heading_error) > 1.0) 
+    {
+        if (heading_error < 0) 
+        {
+            steering_adjust = Kp*heading_error + min_command;
+        } 
+        else 
+        {
+            steering_adjust = Kp*heading_error - min_command;
+        }
+    } 
+    return steering_adjust;
+  }
+  private void EnableAutoAlign()
+  {
+    m_AutoAlign = true;
+  }
+
+  private void DisableAutoAlign()
+  {
+    m_AutoAlign = false;
+  }
+  
   private void configureBindings() {
     
     CommandXboxController pointer;
     if (singleDriver)
-      pointer = joystick;
+      pointer = driver;
     else
       pointer = operator;
 
@@ -108,19 +147,27 @@ public class RobotContainer {
     MaxSpeed = MaxSpeed*adjustment;
     MaxAngularRate = MaxAngularRate*adjustment;
 
+    //Todo: Set automatic alignment code. 
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(joystick.getLeftY() * MaxSpeed) // Drive forward with
+        drivetrain.applyRequest(() -> drive.withVelocityX(driver.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
-            .withVelocityY(joystick.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(-joystick.getRightX() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            .withVelocityY(driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withRotationalRate(calculateRotation() * MaxAngularRate) // Drive counterclockwise with negative X (left)
         ).ignoringDisable(true));
 
-    joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
+    driver.a()
+     .onTrue(new InstantCommand(() -> EnableAutoAlign()));
+
+    Trigger rightStickUsed = new Trigger( ()-> this.rightStickUsed());
+    rightStickUsed.onTrue(new InstantCommand(() -> DisableAutoAlign()));
+
+    //Original breaking code from CTRE
+    /*joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
-        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));
+        .applyRequest(() -> point.withModuleDirection(new Rotation2d(-joystick.getLeftY(), -joystick.getLeftX()))));*/
 
     // reset the field-centric heading on left bumper press
-    joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
+    driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
     //drivetrain.registerTelemetry(logger::telemeterize);
 
@@ -271,6 +318,15 @@ public class RobotContainer {
                 new InstantCommand(() -> m_Shooter.StopIndexMotor())))
             .andThen(new InstantCommand(() -> m_Intake.goToStow()))); 
    
+
+      /* Auto Alignment */
+      /*pointer.a()
+        .onTrue(new InstantCommand(() -> s_Swerve.AutoAlign()));
+
+    driver.a()
+        .onTrue(new InstantCommand(() -> s_Swerve.AutoAlign())); */
+
+
       /*New Amp Shot */
       pointer.b() //Amp shot 
       .and(inTakeEmpty)  

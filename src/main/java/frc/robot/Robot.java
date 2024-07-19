@@ -3,20 +3,15 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
-
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
+import org.photonvision.targeting.PhotonPipelineResult;
 //import edu.wpi.first.net.PortForwarder;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -24,25 +19,18 @@ import java.util.List;
 import java.util.Optional;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
-//import org.photonvision.targeting.PhotonTrackedTarget;
-//import org.photonvision.targeting.TargetCorner;
-//import org.photonvision.targeting.PhotonTrackedTarget;
-//import org.photonvision.utils.PacketUtils;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private RobotContainer m_robotContainer;
-
-  private final boolean UseLimelight = false;
+  private Vision vision;
 
   /*Photon Vision Initialization */
-  PhotonCamera camera = new PhotonCamera("Arducam");
-  public double TargetYaw = Constants.VisionData.NoTarget;
+  //PhotonCamera camera = new PhotonCamera("Arducam");
 
-  public static final double targetWidth =
+  /*public static final double targetWidth =
           Units.inchesToMeters(41.30) - Units.inchesToMeters(6.70); // meters
 
   public static final double targetHeight =
@@ -57,7 +45,7 @@ public class Robot extends TimedRobot {
   public static final Pose3d kFarTargetPose =
           new Pose3d(
                   new Translation3d(kFarTgtXPos, kFarTgtYPos, kFarTgtZPos),
-                  new Rotation3d(0.0, 0.0, Units.degreesToRadians(180)));
+                  new Rotation3d(0.0, 0.0, Units.degreesToRadians(180)));*/
   /* End Photon Vision Initialization */
 
 public PhotonTrackedTarget FindSpeakerTarget(List<PhotonTrackedTarget> targetList){
@@ -83,16 +71,17 @@ public PhotonTrackedTarget FindSpeakerTarget(List<PhotonTrackedTarget> targetLis
 
     m_robotContainer = new RobotContainer();
     m_robotContainer.drivetrain.getDaqThread().setThreadPriority(99);
+    vision = new Vision();
     m_robotContainer.FixArm();
   }
   @Override
   public void robotPeriodic() {
 
-    //see this link - https://www.chiefdelphi.com/t/apriltag-odometry-with-photonvision-help/451360/24
-    
     CommandScheduler.getInstance().run();
     
-    var result = camera.getLatestResult();
+    /*Original vision targeting - modified to use vision class */
+    //var result = camera.getLatestResult();
+    PhotonPipelineResult result = vision.getLatestResult();
     PhotonTrackedTarget target = null;
 
     //Calculate shooter pivot and autoaim
@@ -103,8 +92,7 @@ public PhotonTrackedTarget FindSpeakerTarget(List<PhotonTrackedTarget> targetLis
       } 
       else
         target = null;
-
-        
+  
       if(target != null)
       {
           //Todo move to the telemetry class
@@ -114,44 +102,39 @@ public PhotonTrackedTarget FindSpeakerTarget(List<PhotonTrackedTarget> targetLis
           //Provide target data to swerve
           if( (target.getFiducialId() == 7) || (target.getFiducialId() == 4) )
           {  
-            TargetYaw = target.getYaw();
+            /*todo - this is for the swerve drive, maybe set in the container instead */
+            m_robotContainer.m_TargetYaw = target.getYaw();
 
             double range =
                 PhotonUtils.calculateDistanceToTargetMeters(
-                        Constants.VisionData.CAMERA_HEIGHT_METERS,
-                        Constants.VisionData.TARGET_HEIGHT_METERS,
-                        Constants.VisionData.CAMERA_PITCH_RADIANS,
+                        Constants.Vision.CAMERA_HEIGHT_METERS,
+                        Constants.Vision.TARGET_HEIGHT_METERS,
+                        Constants.Vision.CAMERA_PITCH_RADIANS,
                         Units.degreesToRadians(target.getPitch()));
             m_robotContainer.SetShooterRange(range);
           }
           else
           { 
-             TargetYaw = Constants.VisionData.NoTarget;
-             m_robotContainer.SetShooterRange(Constants.VisionData.NoTarget);
+             m_robotContainer.m_TargetYaw = Constants.Vision.NoTarget;
+             m_robotContainer.SetShooterRange(Constants.Vision.NoTarget);
           }
       } 
       else
-        TargetYaw = Constants.VisionData.NoTarget;
+        m_robotContainer.m_TargetYaw = Constants.Vision.NoTarget;
       
-    
-    /**
-     * This example of adding Limelight is very simple and may not be sufficient for on-field use.
-     * Users typically need to provide a standard deviation that scales with the distance to target
-     * and changes with number of tags available.
-     *
-     * This example is sufficient to show that vision integration is possible, though exact implementation
-     * of how to use vision should be tuned per-robot and to the team's specification.
-     */
-    if (UseLimelight) {
-      var lastResult = LimelightHelpers.getLatestResults("limelight").targetingResults;
+      /* Calculate Pose from camera data */
+      // Correct pose estimate with vision measurements
+      var visionEst = vision.getEstimatedGlobalPose();
+      visionEst.ifPresent(
+              est -> {
+                  var estPose = est.estimatedPose.toPose2d();
+                  // Change our trust in the measurement based on the tags we can see
+                  var estStdDevs = vision.getEstimationStdDevs(estPose);
 
-      Pose2d llPose = lastResult.getBotPose2d_wpiBlue();
-
-      if (lastResult.valid) {
-        m_robotContainer.drivetrain.addVisionMeasurement(llPose, Timer.getFPGATimestamp());
-      }
-    }
-
+                  m_robotContainer.drivetrain.addVisionMeasurement(
+                          est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
+              });
+      m_robotContainer.logPosition();
   }
 
   @Override

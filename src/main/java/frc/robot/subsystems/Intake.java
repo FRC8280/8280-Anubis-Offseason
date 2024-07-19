@@ -65,7 +65,7 @@ public class Intake extends SubsystemBase {
     mPivotMotor.restoreFactoryDefaults();
     mPivotMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
     mPivotMotor.setSmartCurrentLimit(30);
-
+    
     //mPivotMotor.setSoftLimit(SoftLimitDirection.kReverse, -55);
     //mPivotMotor.setSoftLimit(SoftLimitDirection.kForward, 0);
     //mPivotMotor.enableSoftLimit(SoftLimitDirection.kForward,true );
