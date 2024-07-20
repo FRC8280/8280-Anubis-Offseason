@@ -114,8 +114,8 @@ public final class Constants {
         public static final double climberPower = 0.6;
     }
 
-
     public static final class Shooter {
+        public static final double kAutoShotDuration = 0.5;
         public static final int kTopCanId = 16;
         public static final int kBottomCanId = 17;
         public static final int kIndexCanId = 14;

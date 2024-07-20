@@ -5,6 +5,7 @@
 package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
 import edu.wpi.first.wpilibj.XboxController;
@@ -15,6 +16,9 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.ExtendIntake;
+import frc.robot.commands.RetractIntake;
+import frc.robot.commands.ShootCommand;
 //import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -54,6 +58,28 @@ public class RobotContainer {
   private Command runAuto = drivetrain.getAutoPath("Tests");
 
   //private final Telemetry logger = new Telemetry(MaxSpeed);
+
+  private ShootCommand m_ShootCommand;
+  private RetractIntake m_RetractIntakeCommand;
+  private ExtendIntake m_ExtendIntakeCommand;
+
+  public RobotContainer() {
+    m_ShootCommand = new ShootCommand(m_Shooter, m_Intake);
+    m_RetractIntakeCommand = new RetractIntake(m_Intake);
+    m_ExtendIntakeCommand = new ExtendIntake(m_Intake, m_Shooter);
+
+    // Register Named Commands
+    NamedCommands.registerCommand("Shoot Note", m_ShootCommand);
+    NamedCommands.registerCommand("Extend Intake", m_ExtendIntakeCommand);
+    NamedCommands.registerCommand("Retract Intake", m_RetractIntakeCommand);
+
+    configureBindings();
+  }
+
+  public Command getAutonomousCommand() {
+    /* First put the drivetrain into auto run mode, then run the auto */
+    return runAuto;
+  }
 
   public void logPosition()
   {
@@ -271,6 +297,7 @@ public class RobotContainer {
         
         .andThen(new InstantCommand(() -> m_Shooter.StopIndexMotor())) // stop the adjustment
         .andThen(new InstantCommand(() -> m_Shooter.DisableOverride())) // disable override
+        
       //Normal shoot
       .andThen(new InstantCommand(() -> m_Shooter.SpinShootingMotorsDynamic()) // Turn on the shooter
             //.andThen(new WaitCommand(0.7)) // get up to speed
@@ -317,15 +344,6 @@ public class RobotContainer {
                 new InstantCommand(() -> m_Shooter.ManualSetShooterSpeed(0)),
                 new InstantCommand(() -> m_Shooter.StopIndexMotor())))
             .andThen(new InstantCommand(() -> m_Intake.goToStow()))); 
-   
-
-      /* Auto Alignment */
-      /*pointer.a()
-        .onTrue(new InstantCommand(() -> s_Swerve.AutoAlign()));
-
-    driver.a()
-        .onTrue(new InstantCommand(() -> s_Swerve.AutoAlign())); */
-
 
       /*New Amp Shot */
       pointer.b() //Amp shot 
@@ -370,13 +388,5 @@ public class RobotContainer {
       }
   }
 
-  public RobotContainer() {
 
-    configureBindings();
-  }
-
-  public Command getAutonomousCommand() {
-    /* First put the drivetrain into auto run mode, then run the auto */
-    return runAuto;
-  }
 }
