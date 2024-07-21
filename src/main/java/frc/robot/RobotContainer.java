@@ -5,10 +5,14 @@
 package frc.robot;
 
 import com.ctre.phoenix6.mechanisms.swerve.SwerveRequest;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule.DriveRequestType;
 
+//import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -54,14 +58,13 @@ public class RobotContainer {
   //private final SwerveRequest.RobotCentric forwardStraight = new SwerveRequest.RobotCentric().withDriveRequestType(DriveRequestType.OpenLoopVoltage);
   //private final SwerveRequest.PointWheelsAt point = new SwerveRequest.PointWheelsAt();
 
-  /* Path follower */
-  private Command runAuto = drivetrain.getAutoPath("Tests");
-
-  //private final Telemetry logger = new Telemetry(MaxSpeed);
+  private final Telemetry logger = new Telemetry(MaxSpeed);
 
   private ShootCommand m_ShootCommand;
   private RetractIntake m_RetractIntakeCommand;
   private ExtendIntake m_ExtendIntakeCommand;
+
+  private SendableChooser<Command> autoChooser = new SendableChooser<>();
 
   public RobotContainer() {
     m_ShootCommand = new ShootCommand(m_Shooter, m_Intake);
@@ -72,13 +75,26 @@ public class RobotContainer {
     NamedCommands.registerCommand("Shoot Note", m_ShootCommand);
     NamedCommands.registerCommand("Extend Intake", m_ExtendIntakeCommand);
     NamedCommands.registerCommand("Retract Intake", m_RetractIntakeCommand);
+    NamedCommands.registerCommand("Shutdown Intake", new InstantCommand(() -> m_Intake.StopAllMotors()));
+    NamedCommands.registerCommand("Shutdown Shooter",  new InstantCommand(() -> m_Shooter.StopAllMotors()));
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     configureBindings();
   }
 
+  public void PeriodicCall()
+  {
+    //SmartDashboard.putNumber("AutoPivot Rot", calculateRotation());
+    //SmartDashboard.putNumber("Right Stick",driver.getRightX());
+    //SmartDashboard.putNumber("Target Yaw",m_TargetYaw);
+    //SmartDashboard.putBoolean("AutoAlign",m_AutoAlign);
+    }
+
   public Command getAutonomousCommand() {
     /* First put the drivetrain into auto run mode, then run the auto */
-    return runAuto;
+    return autoChooser.getSelected();
   }
 
   public void logPosition()
@@ -113,13 +129,7 @@ public class RobotContainer {
 
   private boolean rightStickUsed()
   {
-    XboxController pointer;
-    if (singleDriver)
-      pointer = driver.getHID();
-    else
-      pointer = operator.getHID();
-
-    if(Math.abs(pointer.getRightX()) > 0.1)
+    if(Math.abs(driver.getHID().getRightX()) > 0.1)
       return true;
     
     return false;
@@ -127,8 +137,8 @@ public class RobotContainer {
   private double calculateRotation(){
 
     //If the auto alignment flag isn't set or their is no target. Simply use the joystick data. 
-    if(!m_AutoAlign && m_TargetYaw == Constants.Vision.NoTarget)
-      return -driver.getRightX();
+   if(!m_AutoAlign || m_TargetYaw == Constants.Vision.NoTarget)
+      return -driver.getRightX()* MaxAngularRate;
 
     double Kp = -0.005f;
     double min_command = 0.05f;
@@ -146,8 +156,9 @@ public class RobotContainer {
             steering_adjust = Kp*heading_error - min_command;
         }
     } 
-    return steering_adjust;
+    return -steering_adjust* MaxAngularRate;
   }
+
   private void EnableAutoAlign()
   {
     m_AutoAlign = true;
@@ -178,7 +189,7 @@ public class RobotContainer {
         drivetrain.applyRequest(() -> drive.withVelocityX(driver.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
             .withVelocityY(driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
-            .withRotationalRate(calculateRotation() * MaxAngularRate) // Drive counterclockwise with negative X (left)
+            .withRotationalRate(calculateRotation()) // Drive counterclockwise with negative X (left)
         ).ignoringDisable(true));
 
     driver.a()
@@ -195,7 +206,7 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
 
-    //drivetrain.registerTelemetry(logger::telemeterize);
+    drivetrain.registerTelemetry(logger::telemeterize);
 
     //Hat adjustment at low speed. 
     //joystick.pov(0).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
@@ -265,12 +276,10 @@ public class RobotContainer {
     pointer.rightTrigger()
       .and(inTakeEmpty)  
       .onTrue(new InstantCommand(() -> m_Shooter.SpinShootingMotorsDynamic()) // Turn on the shooter
-            //.andThen(new WaitCommand(0.7)) // get up to speed
             .andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
              .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
                                         new InstantCommand(() ->m_Shooter.StartIndexMotor())))
             
-            //.andThen(new InstantCommand(() -> m_Shooter.StartIndexMotor())) // start indexer
             .andThen(new WaitCommand(0.25)) // Wait for note to clear
             .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()),
                                        //new InstantCommand(() -> m_Shooter.ManualSetShooterSpeed(0)),
@@ -300,15 +309,12 @@ public class RobotContainer {
         
       //Normal shoot
       .andThen(new InstantCommand(() -> m_Shooter.SpinShootingMotorsDynamic()) // Turn on the shooter
-            //.andThen(new WaitCommand(0.7)) // get up to speed
             .andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
              .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
                                         new InstantCommand(() ->m_Shooter.StartIndexMotor())))
             
-            //.andThen(new InstantCommand(() -> m_Shooter.StartIndexMotor())) // start indexer
             .andThen(new WaitCommand(0.25)) // Wait for note to clear
             .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()),
-                                       //new InstantCommand(() -> m_Shooter.ManualSetShooterSpeed(0)),
                                        new InstantCommand(() -> m_Shooter.OverrideShooterToZero()),
                                        new InstantCommand(() -> m_Shooter.StopIndexMotor())))
             .andThen(new InstantCommand(() -> m_Shooter.pivotLoaded()))));
@@ -357,7 +363,6 @@ public class RobotContainer {
              .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
                                         new InstantCommand(() ->m_Shooter.StartIndexMotor())))
             
-            //.andThen(new InstantCommand(() -> m_Shooter.StartIndexMotor())) // start indexer
             .andThen(new WaitCommand(1.25)) // Wait for note to clear
             .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()),
                                        //new InstantCommand(() -> m_Shooter.ManualSetShooterSpeed(0)),
@@ -372,11 +377,8 @@ public class RobotContainer {
       pointer.y()
         .onTrue(new InstantCommand(()-> m_Shooter.FeedShot())
       .andThen(new WaitCommand(1.0))
-      //.andThen(new InstantCommand(()-> m_Shooter.ManualSetShooterSpeedboth(0.07,0.15)))
       .andThen(new InstantCommand(()-> m_Shooter.SpinShootingMotorsBoth(Constants.Shooter.k_FeedTopRPM,Constants.Shooter.k_FeedBottomRPM)))
-      //.andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
       .andThen(new WaitCommand(1))       //Wait for note to clear
-      //.andThen(new InstantCommand(() -> m_Shooter.StartIndexMotor())) //start indexer
       .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntakeNudge()),
                                         new InstantCommand(() ->m_Shooter.StartIndexMotor())))  
       .andThen(new WaitCommand(2))       //Wait for note to clear

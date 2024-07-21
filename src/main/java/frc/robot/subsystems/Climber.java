@@ -1,7 +1,3 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
@@ -36,8 +32,6 @@ public class Climber extends SubsystemBase {
   private SparkPIDController m_RightPidController;
 
   private double currentClimberPosition = Constants.Climber.cruitseHeight;
-  //private boolean manualClimber = false;
-    //private boolean climberGoingUp = false;
   private DigitalInput m_leftHallEffectSensor;
   private DigitalInput m_rightHallEffectSensor;
 
@@ -98,9 +92,6 @@ public class Climber extends SubsystemBase {
 
   public void IncreasePower()
   {
-    //manualClimber = true;
-
-    //climberGoingUp = true;
     if(m_RightEncoder.getPosition() < Constants.Climber.maxClimberHeight)
       m_rightClimber.set(Constants.Climber.climberPower);
 
@@ -111,15 +102,6 @@ public class Climber extends SubsystemBase {
   public void DecreasePower()
   {
 
-    //manualClimber = true;
-    //climberGoingUp = false;
-
-    //if(m_RightEncoder.getPosition() > Constants.Climber.minClimberHeight)
-     // m_rightClimber.set(-Constants.Climber.climberPower/4);
-
-   // if(m_leftEncoder.getPosition() > Constants.Climber.minClimberHeight)
-      //m_leftClimber.set(-Constants.Climber.climberPower/4);
-
    if(m_rightHallEffectSensor.get())
       m_rightClimber.set(-Constants.Climber.climberPower);
    else
@@ -129,33 +111,23 @@ public class Climber extends SubsystemBase {
     m_leftClimber.set(-Constants.Climber.climberPower);
   else 
     m_leftEncoder.setPosition(0); 
-
-  }
-
-  public void EnableMotorController()
-  {
-    //manualClimber = false;
   }
 
   public void NoPower()
   {
-    //climberGoingUp = false;
       m_rightClimber.set(0);
       m_leftClimber.set(0);
   }
 
   public void SetClimberAmpScorePosition()
   {
-    //manualClimber = false;
     currentClimberPosition = Constants.Climber.ampScoreHeight;
 
   }
 
    public void SetClimberCruise()
   {
-    //manualClimber = false;
     currentClimberPosition = Constants.Climber.cruitseHeight;
-
   }
 
   public boolean ClimbersAtAmpPosition()
@@ -168,32 +140,6 @@ public class Climber extends SubsystemBase {
   @Override
   public void periodic() {
 
-    
-    /*if(!m_rightHallEffectSensor.get())
-    {  
-       if(!climberGoingUp)
-       {
-        m_rightClimber.set(0);
-        m_leftClimber.set(0);
-       }
-       m_RightEncoder.setPosition(0);
-       m_leftEncoder.setPosition(0);
-    }*/
-   
-   
-   /* if(!m_leftHallEffectSensor.get())
-    {
-      if(!climberGoingUp)
-        m_leftClimber.set(0);
-      m_leftEncoder.setPosition(0); 
-    } */
-
-   /* if(manualClimber == false)
-    {
-      m_LeftPidController.setReference(currentClimberPosition, CANSparkMax.ControlType.kPosition);
-      m_RightPidController.setReference(currentClimberPosition, CANSparkMax.ControlType.kPosition);
-    }*/
-    
     SmartDashboard.putNumber("Climber Pos Left", m_leftEncoder.getPosition());
     SmartDashboard.putNumber("Climber Pos Right", m_RightEncoder.getPosition());
     SmartDashboard.putBoolean("Left Magnet", m_leftHallEffectSensor.get());

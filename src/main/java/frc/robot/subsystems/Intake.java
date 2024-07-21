@@ -2,7 +2,7 @@ package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkAbsoluteEncoder;
+//import com.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.playingwithfusion.TimeOfFlight;
@@ -28,7 +28,7 @@ public class Intake extends SubsystemBase {
   private double currentPivotPosition = Constants.Intake.k_pivotAngleStow;
   public double maxRPM, maxVel, minVel, maxAcc, allowedErr;
   
-  private final SparkAbsoluteEncoder m_AbsolutePivotEncoder; 
+  //private final SparkAbsoluteEncoder m_AbsolutePivotEncoder; 
 
   //public final LEDs m_leds = LEDs.getInstance();
   
@@ -59,6 +59,7 @@ public class Intake extends SubsystemBase {
     mIntakeMotor = new CANSparkMax(Constants.Intake.kIntakeMotorId, MotorType.kBrushless);
     mIntakeMotor.restoreFactoryDefaults();
     mIntakeMotor.setIdleMode(CANSparkMax.IdleMode.kBrake);
+    mIntakeMotor.setSmartCurrentLimit(30);
     mIntakeMotor.burnFlash();
 
     mPivotMotor = new CANSparkMax(Constants.Intake.kPivotMotorId, MotorType.kBrushless);
@@ -71,7 +72,7 @@ public class Intake extends SubsystemBase {
     //mPivotMotor.enableSoftLimit(SoftLimitDirection.kForward,true );
     //mPivotMotor.enableftLimit(SoftLimitDirection.kReverse,true );
     
-    m_AbsolutePivotEncoder = mPivotMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+    //m_AbsolutePivotEncoder = mPivotMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     
     m_pidController = mPivotMotor.getPIDController();
     m_encoder = mPivotMotor.getEncoder();

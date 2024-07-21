@@ -18,6 +18,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 import java.util.List;
 import java.util.Optional;
 
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.photonvision.PhotonUtils;
 
@@ -27,26 +28,7 @@ public class Robot extends TimedRobot {
   private RobotContainer m_robotContainer;
   private Vision vision;
 
-  /*Photon Vision Initialization */
-  //PhotonCamera camera = new PhotonCamera("Arducam");
-
-  /*public static final double targetWidth =
-          Units.inchesToMeters(41.30) - Units.inchesToMeters(6.70); // meters
-
-  public static final double targetHeight =
-          Units.inchesToMeters(98.19) - Units.inchesToMeters(81.19); // meters
-
-  public static final double kFarTgtXPos = Units.feetToMeters(54);
-  public static final double kFarTgtYPos =
-          Units.feetToMeters(27 / 2) - Units.inchesToMeters(43.75) - Units.inchesToMeters(48.0 / 2.0);
-  public static final double kFarTgtZPos =
-          (Units.inchesToMeters(98.19) - targetHeight) / 2 + targetHeight;
-
-  public static final Pose3d kFarTargetPose =
-          new Pose3d(
-                  new Translation3d(kFarTgtXPos, kFarTgtYPos, kFarTgtZPos),
-                  new Rotation3d(0.0, 0.0, Units.degreesToRadians(180)));*/
-  /* End Photon Vision Initialization */
+  private final Field2d m_field = new Field2d();
 
 public PhotonTrackedTarget FindSpeakerTarget(List<PhotonTrackedTarget> targetList){
     Optional<Alliance> ally = DriverStation.getAlliance();
@@ -73,10 +55,15 @@ public PhotonTrackedTarget FindSpeakerTarget(List<PhotonTrackedTarget> targetLis
     m_robotContainer.drivetrain.getDaqThread().setThreadPriority(99);
     vision = new Vision();
     m_robotContainer.FixArm();
+    // Do this in either robot or subsystem init
+    SmartDashboard.putData("Field", m_field);
   }
   @Override
   public void robotPeriodic() {
-
+    
+    m_robotContainer.PeriodicCall();
+    
+    double range = Constants.Vision.NoTarget;
     CommandScheduler.getInstance().run();
     
     /*Original vision targeting - modified to use vision class */
@@ -105,7 +92,7 @@ public PhotonTrackedTarget FindSpeakerTarget(List<PhotonTrackedTarget> targetLis
             /*todo - this is for the swerve drive, maybe set in the container instead */
             m_robotContainer.m_TargetYaw = target.getYaw();
 
-            double range =
+            range =
                 PhotonUtils.calculateDistanceToTargetMeters(
                         Constants.Vision.CAMERA_HEIGHT_METERS,
                         Constants.Vision.TARGET_HEIGHT_METERS,
@@ -135,6 +122,9 @@ public PhotonTrackedTarget FindSpeakerTarget(List<PhotonTrackedTarget> targetLis
                           est.estimatedPose.toPose2d(), est.timestampSeconds, estStdDevs);
               });
       m_robotContainer.logPosition();
+
+      m_field.setRobotPose(m_robotContainer.drivetrain.getState().Pose);
+        //m_odometry.getPoseMeters());
   }
 
   @Override
