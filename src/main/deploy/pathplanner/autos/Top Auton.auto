@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.4509432655228947,
-      "y": 5.531946336619947
+      "x": 0.576371201364769,
+      "y": 7.017780172783469
     },
-    "rotation": 0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
@@ -14,13 +14,19 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move Bottom Note"
+            "pathName": "Top Shot"
           }
         },
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "Shoot Note"
+            "pathName": "Move Top Note from Top"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Charge Center Top"
           }
         }
       ]

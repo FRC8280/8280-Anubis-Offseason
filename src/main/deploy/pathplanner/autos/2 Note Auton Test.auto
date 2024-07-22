@@ -5,52 +5,28 @@
       "x": 1.3984820622261451,
       "y": 5.538874221994797
     },
-    "rotation": 0
+    "rotation": 180.0
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "wait",
           "data": {
-            "name": "Shoot Note"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Extend Intake"
+            "waitTime": 0.5
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Move to Center"
+            "pathName": "Move Center"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract Intake"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot Note"
+            "pathName": "Move Top Note"
           }
         }
       ]

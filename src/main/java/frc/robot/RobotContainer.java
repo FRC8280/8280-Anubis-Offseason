@@ -186,9 +186,9 @@ public class RobotContainer {
 
     //Todo: Set automatic alignment code. 
     drivetrain.setDefaultCommand( // Drivetrain will execute this command periodically
-        drivetrain.applyRequest(() -> drive.withVelocityX(driver.getLeftY() * MaxSpeed) // Drive forward with
+        drivetrain.applyRequest(() -> drive.withVelocityX(-driver.getLeftY() * MaxSpeed) // Drive forward with
                                                                                            // negative Y (forward)
-            .withVelocityY(driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
+            .withVelocityY(-driver.getLeftX() * MaxSpeed) // Drive left with negative X (left)
             .withRotationalRate(calculateRotation()) // Drive counterclockwise with negative X (left)
         ).ignoringDisable(true));
 
