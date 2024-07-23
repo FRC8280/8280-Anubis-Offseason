@@ -23,31 +23,44 @@ public class ShootCommand extends Command {
   @Override
   public void initialize() {
     //Start up the motor
-    m_shotTimer.reset();
     m_shooterSubsystem.SpinShootingMotorsDynamic();
+     m_shotTimer.reset();
   }
 
   @Override
   public void execute() {
+    
     //When motors hit RPM or time start the indexer
     if(m_shooterSubsystem.AtTargetSpeed())
     {
         m_intakeSubsystem.ReverseIntake();
         m_shooterSubsystem.StartIndexMotor();
+        
+         m_shotTimer.start();
     }
   }
 
   @Override
   public void end(boolean interrupted) {
+    m_shooterSubsystem.OverrideShooterToZero();
     m_shooterSubsystem.StopAllMotors();
     m_intakeSubsystem.StopAllMotors();
+    m_shotTimer.stop();
+      m_shotTimer.reset();
   }
 
   @Override
   public boolean isFinished() {
 
     if(m_shotTimer.hasElapsed(Constants.Shooter.kAutoShotDuration))
-        return true;
+    {
+      m_shooterSubsystem.OverrideShooterToZero();
+      m_shooterSubsystem.StopAllMotors();
+      m_intakeSubsystem.StopAllMotors();
+      m_shotTimer.stop();
+      m_shotTimer.reset();
+      return true;
+    }
     else
         return false;
   }
