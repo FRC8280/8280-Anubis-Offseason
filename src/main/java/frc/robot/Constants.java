@@ -32,8 +32,8 @@ public final class Constants {
         public static final String kCameraName = "Arducam";
         // Cam mounted facing forward, half a meter forward of center, half a meter up from center.
         public static final Transform3d kRobotToCam =
-                new Transform3d(new Translation3d(Units.inchesToMeters(-13), Units.inchesToMeters(-2.5), Units.inchesToMeters(11.5)),
-                new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(45), Units.degreesToRadians(0)));  //Todo: Add my camera position. 
+                new Transform3d(new Translation3d(Units.inchesToMeters(13), Units.inchesToMeters(2.5), Units.inchesToMeters(11.5)),
+                new Rotation3d(Units.degreesToRadians(0), Units.degreesToRadians(-45), Units.degreesToRadians(0)));  //Todo: Add my camera position. 
 
         // The layout of the AprilTags on the field
         public static final AprilTagFieldLayout kTagLayout =
@@ -159,9 +159,9 @@ public final class Constants {
         public static final double kBaseShooterElevation = k_SubWoofer;
 
         //Amp shot data
-        public static final double k_AmpShot = 0.44;//0.3;  //good amp shot angle: 11.7
-        public static final double k_AmpTopRPM = 900;//850;//700;//
-        public static final double k_AmpBottomRPM = 1200;//1150;//1200;
+        public static final double k_AmpShot = 0.32;//0.44;  //good amp shot angle: 11.7
+        public static final double k_AmpTopRPM = 900;
+        public static final double k_AmpBottomRPM = 1200;;
         public static final double k_AmpArmHalfWayPoint = 6;
         public static final double k_AmpArmIntakePosition = 8;
 

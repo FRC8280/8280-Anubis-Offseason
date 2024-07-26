@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 1.2647271448389068,
+      "y": 5.535354916863679
+    },
+    "rotation": 180.0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoToCenter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoTowardOpen"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "GoTowardAmp"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

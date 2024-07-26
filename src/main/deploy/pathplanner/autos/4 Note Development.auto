@@ -38,13 +38,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Shoot Note"
+            "name": "Retract Intake"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Retract Intake"
+            "name": "Shutdown Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Note"
           }
         },
         {
@@ -78,9 +84,9 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Move Speaker"
+            "name": "Shutdown Intake"
           }
         },
         {
@@ -93,12 +99,6 @@
           "type": "named",
           "data": {
             "name": "Shutdown Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract Intake"
           }
         },
         {
@@ -110,7 +110,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Move Top Note dead"
+            "pathName": "New Move Top Note"
           }
         },
         {
@@ -120,9 +120,15 @@
           }
         },
         {
-          "type": "path",
+          "type": "named",
           "data": {
-            "pathName": "Move Speaker"
+            "name": "Retract Intake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shutdown Intake"
           }
         },
         {
@@ -135,18 +141,6 @@
           "type": "named",
           "data": {
             "name": "Shutdown Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shutdown Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract Intake"
           }
         }
       ]

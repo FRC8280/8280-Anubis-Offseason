@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2351263164064805,
-      "y": 5.525487974052871
+      "x": 1.3984820622261451,
+      "y": 5.538874221994797
     },
     "rotation": 180.0
   },
@@ -32,7 +32,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 0.5
           }
         },
         {
@@ -68,19 +68,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Move Speaker"
+            "waitTime": 1.0
           }
         },
         {
@@ -92,13 +80,13 @@
         {
           "type": "named",
           "data": {
-            "name": "Shutdown Shooter"
+            "name": "Retract Intake"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Retract Intake"
+            "name": "Shutdown Shooter"
           }
         },
         {
@@ -116,13 +104,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Move Speaker"
+            "waitTime": 1.0
           }
         },
         {

@@ -531,10 +531,34 @@ public void ReverseIndexerLight()
       return 0.48;//25.6696;// + adjustment;
     else if( (distance >= 1.35) && (distance <1.43) )
       return 0.50;//26.217;//+ + adjustment;
-    else if( (distance >= 1.43) && (distance <1.46) )
+    else if( (distance >= 1.43) && (distance <1.46) ) //old
       return 0.51;//26.759;// + adjustment;
-    else if( (distance >= 1.46) && (distance <1.47) )
-      return 0.51;//26.759;// + adjustment;
+    else if( (distance >= 1.46) && (distance <1.49) )
+      return 0.54;//26.759;// + adjustment;
+    else if( (distance >= 1.49) && (distance <1.53) )
+      return 0.56;//26.759;// + adjustment;
+    else if( (distance >= 1.52) && (distance <1.55) )
+      return 0.58;//26.759;// + adjustment;
+    else if( (distance >= 1.55) && (distance <1.58) )
+      return 0.56;//26.759;// + adjustment;
+    else if( (distance >= 1.58) && (distance <1.61) )
+      return 0.56;//26.759;// + adjustment;
+    else if( (distance >= 1.61) && (distance <1.64) )  //2
+      return 0.56;//26.759;// + adjustment;
+    else if( (distance >= 1.64) && (distance <1.67) )
+      return 0.56;//26.759;// + adjustment;
+   /* else if( (distance >= 1.67) && (distance <1.70) )
+      return 0.56;//26.759;// + adjustment;
+    else if( (distance >= 1.70) && (distance <1.73) )
+      return 0.56;//26.759;// + adjustment;
+    else if( (distance >= 1.73) && (distance <1.76) )
+      return 0.56;//26.759;// + adjustment;
+    else if( (distance >= 1.76) && (distance <1.79) )
+      return 0.56;//26.759;// + adjustment;
+    else if( (distance >= 1.79) && (distance <1.82) )
+      return 0.56;//26.759;// + adjustment;
+    else if( (distance >= 1.82) && (distance <1.85) )
+      return 0.56;//26.759;// + adjustment;*/
     else
       return 0.247;//28.4;//+ adjustment;
   }
