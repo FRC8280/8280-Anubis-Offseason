@@ -1,6 +1,6 @@
 package frc.robot.subsystems;
 
-//import com.playingwithfusion.TimeOfFlight;
+import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
@@ -93,7 +93,7 @@ public class Shooter extends SubsystemBase {
   private static final double kShooterIz = 0; 
   private static final double kShooterFF = 0.000159; 
 
- // private TimeOfFlight distanceSensor;
+  private TimeOfFlight distanceSensor;
 
   private static Shooter mInstance;
   private double lastPivot;
@@ -198,7 +198,7 @@ public class Shooter extends SubsystemBase {
 
     //m_pivotRunning = false;
     m_shooterRunning = false;
-    //distanceSensor = new TimeOfFlight(40);
+    distanceSensor = new TimeOfFlight(40);
 
     //m_Indexing = false;
     lastPivot = Constants.Shooter.k_ShooterPivotLoaded;
@@ -433,6 +433,36 @@ public class Shooter extends SubsystemBase {
     LOADED
   }
 
+  /*  public boolean IndexComplete()
+  {
+    if(m_Indexing && getShooterHasNote())
+    {
+      m_Indexing =false;
+      return true;
+    }  
+    else
+      return false;
+  }*/
+
+  public boolean getShooterHasNote() {
+
+    if(distanceSensor.getRange() < Constants.Shooter.kNoteDetectionDistance)
+      return true;
+    else 
+      return false; 
+  } 
+
+  /*public boolean getShooterIsAdjusted() {
+
+   if(distanceSensor.getRange() < 70)
+    {
+      //System.out.printf("******Adjusted value over 70******\n");
+      return true;
+    }
+    else 
+      return false;
+  }*/
+
   public void SetShooterAngle(double angle)
   {
     return;
@@ -627,7 +657,7 @@ public void ReverseIndexerLight()
    
 
     //
-    //SmartDashboard.putNumber("Shooter Distance", distanceSensor.getRange());
+    SmartDashboard.putNumber("Shooter Sensors Distance", distanceSensor.getRange());
     //SmartDashboard.putNumber("Set Top Motor Speed", m_TopShooterMotorSpeed);
     //SmartDashboard.putNumber("Set Bottom Motor Speed", m_BottomShooterMotorSpeed);
     //SmartDashboard.putNumber("******Calculated Pivot****** %f\n",Constants.Shooter.kAutoElevationConstant*(m_Range - Constants.Shooter.kBaseVisionDistance ) + Constants.Shooter.kBaseShooterElevation);

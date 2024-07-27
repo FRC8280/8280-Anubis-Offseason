@@ -20,19 +20,38 @@
         {
           "type": "named",
           "data": {
-            "name": "Extend Intake"
+            "name": "Shutdown Shooter"
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Move Center"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Move Center"
+                }
+              }
+            ]
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 1.25
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Note"
           }
         },
         {
@@ -44,7 +63,51 @@
         {
           "type": "named",
           "data": {
-            "name": "Shutdown Intake"
+            "name": "Shutdown Shooter"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Move Bottom Note"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Move Back Speaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Retract Intake"
+                }
+              }
+            ]
           }
         },
         {
@@ -60,33 +123,28 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "Extend Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Move Bottom Note"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "New Move Top Note"
+                }
+              }
+            ]
           }
         },
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Retract Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shutdown Intake"
+            "waitTime": 0.5
           }
         },
         {
@@ -98,43 +156,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Shutdown Shooter"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Extend Intake"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "New Move Top Note"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
-          }
-        },
-        {
-          "type": "named",
-          "data": {
             "name": "Retract Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shutdown Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot Note"
           }
         },
         {

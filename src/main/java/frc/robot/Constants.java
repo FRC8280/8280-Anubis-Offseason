@@ -150,7 +150,7 @@ public final class Constants {
         
         public static final double k_AmpArmScore = 1.25;  //Todo increase this value
         public static final double k_ArmIntakeValue = 0.25;
-        public static final double kNoteDetectionDistance = 110;
+        public static final double kNoteDetectionDistance = 145;//110;
         
         public static final double k_RPMShooterTimeLimit = 4;
         //Tune this base distance value

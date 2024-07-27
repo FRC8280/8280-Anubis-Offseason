@@ -257,7 +257,10 @@ public class RobotContainer {
                                     new InstantCommand(() -> m_Intake.ReverseIntake()),
                                     new InstantCommand(() -> m_Shooter.IntakeIndexer())))
 
-        .andThen(new WaitCommand(0.2))//.46
+
+        //.andThen(new WaitCommand(0.2))//.46
+        .andThen(new WaitUntilCommand(()->m_Shooter.getShooterHasNote()))
+        //Todo replace this wait command with sensor
 
         .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()), //stop motors
             new InstantCommand(() -> m_Shooter.StopIndexMotor())))
