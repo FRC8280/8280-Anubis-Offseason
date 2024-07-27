@@ -1,0 +1,37 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 0.6701990713543826,
+      "y": 4.524639627345165
+    },
+    "rotation": 121.60750224624891
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shutdown Shooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Lower Path Center"
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}
