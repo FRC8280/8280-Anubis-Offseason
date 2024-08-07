@@ -214,11 +214,12 @@ public class RobotContainer {
     /* Bindings for drivetrain characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
     /* Back/Start select dynamic/quasistatic, Y/X select forward/reverse direction */
-    driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
+    
+    /*driver.back().and(driver.y()).whileTrue(drivetrain.sysIdDynamic(Direction.kForward));
     driver.back().and(driver.x()).whileTrue(drivetrain.sysIdDynamic(Direction.kReverse));
     driver.start().and(driver.y()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kForward));
     driver.start().and(driver.x()).whileTrue(drivetrain.sysIdQuasistatic(Direction.kReverse));
-   
+   */
 
     /*
      * driver.leftTrigger()
@@ -266,8 +267,9 @@ public class RobotContainer {
             new InstantCommand(() -> m_Shooter.StopIndexMotor())))
 
         .andThen(new InstantCommand(() -> m_Shooter.AdjustIndexPostIntake())) // back the note up using sensor
-        .andThen(new WaitCommand(0.45)) // Simple timer  //37
-        
+        //.andThen(new WaitCommand(0.45)) // Simple timer  //37
+        .andThen(new WaitUntilCommand(()->m_Shooter.getShooterNoteAdjusted()))  //Todo test this late
+
         .andThen(new InstantCommand(() -> m_Shooter.StopIndexMotor())) // stop the adjustment
         .andThen(new InstantCommand(() -> m_Shooter.DisableOverride())) // disable override
         );
@@ -298,13 +300,15 @@ public class RobotContainer {
         .onTrue(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
                                     new InstantCommand(() -> m_Shooter.IntakeIndexer()))
 
-        .andThen(new WaitCommand(0.45))
+        .andThen(new WaitUntilCommand(()->m_Shooter.getShooterHasNote()))  //late
+        //.andThen(new WaitCommand(0.45))
 
         .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()), //stop motors
             new InstantCommand(() -> m_Shooter.StopIndexMotor())))
 
         .andThen(new InstantCommand(() -> m_Shooter.AdjustIndexPostIntake())) // back the note up using sensor
-        .andThen(new WaitCommand(0.45)) // Simple timer
+        .andThen(new WaitUntilCommand(()->m_Shooter.getShooterNoteAdjusted())) //late
+        //.andThen(new WaitCommand(0.45)) // Simple timer
         
         .andThen(new InstantCommand(() -> m_Shooter.StopIndexMotor())) // stop the adjustment
         .andThen(new InstantCommand(() -> m_Shooter.DisableOverride())) // disable override
@@ -344,7 +348,7 @@ public class RobotContainer {
     pointer.povLeft()
      .and(povSubWooferShotTrigger)
         .whileFalse(new InstantCommand(() -> m_Shooter.DecreasePivot(Constants.Shooter.k_ShooterPivotIncrement)));
-       
+        
     pointer.x()
      .and(povSubWooferShotTrigger)
         .onTrue(new InstantCommand(() -> m_Shooter.SubWooferShot())

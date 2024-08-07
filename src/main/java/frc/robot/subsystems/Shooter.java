@@ -21,6 +21,7 @@ public class Shooter extends SubsystemBase {
 
   private Timer m_EmergencyTimer;
   private Timer m_BarClearTimer;
+  private Timer m_AdjustmentTimer;
 
   private CANSparkFlex m_topMotor;
   private CANSparkFlex m_bottomMotor;
@@ -110,6 +111,8 @@ public class Shooter extends SubsystemBase {
 
     m_EmergencyTimer = new Timer();
     m_BarClearTimer = new Timer();
+    m_AdjustmentTimer = new Timer();
+    m_AdjustmentTimer.reset();
     m_BarClearTimer.reset();
     m_BarClearTimer.start();
 
@@ -452,6 +455,21 @@ public class Shooter extends SubsystemBase {
       return false; 
   } 
 
+    public boolean getShooterNoteAdjusted() {
+
+    if(m_AdjustmentTimer.hasElapsed(0.50))  //Override don't go too long. 
+    {
+       m_AdjustmentTimer.stop();
+       m_AdjustmentTimer.reset();
+       return true;
+    }
+
+    if(distanceSensor.getRange() > Constants.Shooter.kNoteDetectionDistanceAdjusted)
+      return true;
+    else 
+      return false; 
+  } 
+
   /*public boolean getShooterIsAdjusted() {
 
    if(distanceSensor.getRange() < 70)
@@ -490,7 +508,10 @@ public class Shooter extends SubsystemBase {
 
   public void AdjustIndexPostIntake()
   {
-    m_indexMotor.set(-0.20);
+    m_AdjustmentTimer.reset();
+    m_AdjustmentTimer.start();
+
+    m_indexMotor.set(-0.40);
   }
   public void IntakeIndexer()
   {
@@ -590,7 +611,7 @@ public void ReverseIndexerLight()
     else if( (distance >= 1.82) && (distance <1.85) )
       return 0.56;//26.759;// + adjustment;*/
     else
-      return 0.247;//28.4;//+ adjustment;
+      return Constants.Shooter.k_SubWoofer;//0.247;
   }
   @Override
   public void periodic() { 
