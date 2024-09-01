@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.6701990713543826,
-      "y": 4.524639627345165
+      "x": 0.7416869722988501,
+      "y": 6.5486408228354005
     },
-    "rotation": 121.60750224624891
+    "rotation": -121.93068210371788
   },
   "command": {
     "type": "sequential",
@@ -18,6 +18,24 @@
           }
         },
         {
+          "type": "path",
+          "data": {
+            "pathName": "Top Amp Note - Direct"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Note"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Retract Intake"
+          }
+        },
+        {
           "type": "named",
           "data": {
             "name": "Shutdown Shooter"
@@ -26,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Lower Path Center"
+            "pathName": "Charge Center From Top"
           }
         }
       ]

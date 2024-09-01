@@ -158,7 +158,7 @@ public class Intake extends SubsystemBase {
       case EJECT:
         return Constants.Intake.k_ejectSpeed;
       case EJECT_LITE:
-        return Constants.Intake.k_ejectSpeed*.65;
+        return Constants.Intake.k_ejectSpeed*.45;
       case EJECT_NUDGE:
         return Constants.Intake.k_ejectSpeedNudge;
       case PULSE:
@@ -319,6 +319,11 @@ public class Intake extends SubsystemBase {
   {
     m_IntakeState = IntakeState.EJECT;
     //mIntakeMotor.set(Constants.Intake.k_ejectSpeed);
+  }
+
+  public void ReverseIntakeModified()
+  {
+     m_IntakeState = IntakeState.EJECT_LITE;
   }
 
    public void ReverseIntakeAmp()

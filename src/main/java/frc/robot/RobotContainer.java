@@ -241,6 +241,7 @@ public class RobotContainer {
         .onTrue(Commands.parallel(new InstantCommand(()->m_Shooter.SetAmpArmIntake()),new InstantCommand(() -> m_Intake.goToGround()),
             new InstantCommand(() -> m_Shooter.pivotLoaded())));
 
+    //Retract intake by releasing
     Trigger retractIntake = new Trigger( ()-> this.TriggerOrBumperDown());
     retractIntake.onFalse(new InstantCommand(() -> m_Intake.goToStow()));
 
@@ -248,6 +249,7 @@ public class RobotContainer {
       .onTrue(Commands.parallel(new InstantCommand(() -> m_Intake.goToGroundForAmp()),
           new InstantCommand(() -> m_Shooter.pivotLoaded())));
 
+    //Automatically drop the amp arm when intake is stowed
     Trigger stowedIntakeAmpArmUp = new Trigger( () -> ( (m_Intake.isPivotStowed()) && (m_Shooter.IsArmInTakePosition())) );
     stowedIntakeAmpArmUp.onTrue(new InstantCommand(() -> m_Shooter.ShutDownAmpArm()));
 
@@ -258,11 +260,8 @@ public class RobotContainer {
                                     new InstantCommand(() -> m_Intake.ReverseIntake()),
                                     new InstantCommand(() -> m_Shooter.IntakeIndexer())))
 
-
         //.andThen(new WaitCommand(0.2))//.46
         .andThen(new WaitUntilCommand(()->m_Shooter.getShooterHasNote()))
-        //Todo replace this wait command with sensor
-
         .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()), //stop motors
             new InstantCommand(() -> m_Shooter.StopIndexMotor())))
 
@@ -286,12 +285,11 @@ public class RobotContainer {
             
             .andThen(new WaitCommand(0.25)) // Wait for note to clear
             .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()),
-                                       //new InstantCommand(() -> m_Shooter.ManualSetShooterSpeed(0)),
                                        new InstantCommand(() -> m_Shooter.OverrideShooterToZero()),
                                        new InstantCommand(() -> m_Shooter.StopIndexMotor())))
             .andThen(new InstantCommand(() -> m_Shooter.pivotLoaded())));
 
-
+    //Potential Issue - do we need this code. The intake transfers automatically todo: test removing
     //Try to transfer the note as it's not empty first
     Trigger inTakeNotEmpty = new Trigger(()->m_Intake.getIntakeHasNote());
     pointer.rightTrigger()
@@ -324,7 +322,8 @@ public class RobotContainer {
                                        new InstantCommand(() -> m_Shooter.OverrideShooterToZero()),
                                        new InstantCommand(() -> m_Shooter.StopIndexMotor())))
             .andThen(new InstantCommand(() -> m_Shooter.pivotLoaded()))));
-            
+    
+    //Eject the note
     pointer.rightBumper()
         .whileTrue(Commands.parallel(new InstantCommand(() -> m_Shooter.SetAmpArmIntake()),
                                        new InstantCommand(() -> m_Intake.ejectNote())));
@@ -339,8 +338,7 @@ public class RobotContainer {
                                   new InstantCommand(() -> m_Shooter.PivotFlat())))
         .onFalse(new InstantCommand(() -> m_Climber.NoPower()));
 
-    // Manually change the pivots.
-    
+    // Manually change the pivots only if the intake is stowed. 
     Trigger povSubWooferShotTrigger = new Trigger ( () -> ( m_Intake.isPivotStowed() ));
     pointer.povRight()
      .and(povSubWooferShotTrigger)
@@ -348,7 +346,8 @@ public class RobotContainer {
     pointer.povLeft()
      .and(povSubWooferShotTrigger)
         .whileFalse(new InstantCommand(() -> m_Shooter.DecreasePivot(Constants.Shooter.k_ShooterPivotIncrement)));
-        
+    
+    //Manually shoot at subwoofer range
     pointer.x()
      .and(povSubWooferShotTrigger)
         .onTrue(new InstantCommand(() -> m_Shooter.SubWooferShot())

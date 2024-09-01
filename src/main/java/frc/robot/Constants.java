@@ -130,9 +130,10 @@ public final class Constants {
         public static final double kTopPower = 0.7;
         public static final double kBottomPower = 0.8;
         public static final double kIndexPower = 0.9;
+        public static final double kIndexPowerSlow = 0.4;
         public static final double kInputPower = 0.3;
 
-        public static final double k_ShooterRPM = 4000;//4000;
+        public static final double k_ShooterRPM = 4000;
         public static final double k_ShooterMAXRPM = 5000;
         public static final double k_ShooterTimer = 500;
 
@@ -153,7 +154,7 @@ public final class Constants {
         public static final double kNoteDetectionDistance = 145;//110;
         public static final double kNoteDetectionDistanceAdjusted = 110;//110;
         
-        public static final double k_RPMShooterTimeLimit = 4;
+        public static final double k_RPMShooterTimeLimit = 2.5;
         //Tune this base distance value
         public static final double kBaseVisionDistance = 0.61;
         public static final double kAutoElevationConstant = 12.0741;

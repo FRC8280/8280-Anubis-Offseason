@@ -278,12 +278,17 @@ public class Shooter extends SubsystemBase {
         return true;
       }  
 
-      if(  (m_topMotorEncoder.getVelocity() / m_TopShooterMotorSpeed ) < 0.95   )
+      /*if(  (m_topMotorEncoder.getVelocity() / m_TopShooterMotorSpeed ) < 0.95   )
         return false;
       if(   (m_bottomMotorEncoder.getVelocity() / m_BottomShooterMotorSpeed ) < 0.95 )
+        return false;*/
+      
+      //Note change to fire when either roller hits 90% of target velocity
+      if( ((m_topMotorEncoder.getVelocity() / m_TopShooterMotorSpeed ) >= 0.9) 
+      || ((m_bottomMotorEncoder.getVelocity() / m_BottomShooterMotorSpeed ) >= 0.9))
+        return true;
+      else
         return false;
-
-      return true;
   }
   //sets motor power
   public void ManualSetShooterSpeedboth(double top, double bottom)
@@ -464,12 +469,19 @@ public class Shooter extends SubsystemBase {
        return true;
     }
 
+     if(distanceSensor.getRange() > Constants.Shooter.kNoteDetectionDistanceAdjusted)
+        return true;
+      else 
+        return false; 
+  } 
+
+  public boolean testAdjustedNote()
+  {
     if(distanceSensor.getRange() > Constants.Shooter.kNoteDetectionDistanceAdjusted)
       return true;
     else 
       return false; 
-  } 
-
+  }
   /*public boolean getShooterIsAdjusted() {
 
    if(distanceSensor.getRange() < 70)
@@ -508,10 +520,18 @@ public class Shooter extends SubsystemBase {
 
   public void AdjustIndexPostIntake()
   {
+    //if(testAdjustedNote()==true)
+   //   return;
+
     m_AdjustmentTimer.reset();
     m_AdjustmentTimer.start();
 
     m_indexMotor.set(-0.40);
+  }
+
+  public void IntakeIndexerModified()
+  {
+    m_indexMotor.set(Constants.Shooter.kIndexPowerSlow);
   }
   public void IntakeIndexer()
   {
@@ -679,9 +699,18 @@ public void ReverseIndexerLight()
 
     //
     SmartDashboard.putNumber("Shooter Sensors Distance", distanceSensor.getRange());
-    //SmartDashboard.putNumber("Set Top Motor Speed", m_TopShooterMotorSpeed);
+    SmartDashboard.putNumber("Set Motor Speed", m_TopShooterMotorSpeed);
+    SmartDashboard.putNumber("Top Motor Speed", m_topMotorEncoder.getVelocity());
+    SmartDashboard.putNumber("Bottom Motor Speed", m_bottomMotorEncoder.getVelocity());
+
+    SmartDashboard.putNumber("Top Motor Percentage", (m_topMotorEncoder.getVelocity() / m_TopShooterMotorSpeed ));
+    SmartDashboard.putNumber("Bottom Motor Percentage", (m_bottomMotorEncoder.getVelocity() / m_BottomShooterMotorSpeed ));
+
+    
     //SmartDashboard.putNumber("Set Bottom Motor Speed", m_BottomShooterMotorSpeed);
     //SmartDashboard.putNumber("******Calculated Pivot****** %f\n",Constants.Shooter.kAutoElevationConstant*(m_Range - Constants.Shooter.kBaseVisionDistance ) + Constants.Shooter.kBaseShooterElevation);
+
+   
 
     }
   }
