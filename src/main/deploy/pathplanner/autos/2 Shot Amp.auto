@@ -18,9 +18,22 @@
           }
         },
         {
-          "type": "path",
+          "type": "parallel",
           "data": {
-            "pathName": "Top Amp Note - Direct"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Top Amp Note - Direct"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              }
+            ]
           }
         },
         {
@@ -45,6 +58,18 @@
           "type": "path",
           "data": {
             "pathName": "Charge Center From Top"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Move back and Shoot"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Shoot Note"
           }
         }
       ]

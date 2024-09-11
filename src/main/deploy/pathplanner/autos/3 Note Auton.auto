@@ -127,12 +127,6 @@
           "data": {
             "name": "Retract Intake"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Charge Center Top"
-          }
         }
       ]
     }

@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 2.05,
-        "y": 3.28
+        "x": 2.56,
+        "y": 4.09
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.915495984838125,
-        "y": 0.8880248529727832
+        "x": 4.224809988081516,
+        "y": 0.7498876536214618
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 8.42249741560824,
-        "y": 2.4475648380683346
+        "x": 8.33,
+        "y": 2.47
       },
       "prevControl": {
-        "x": 7.71889375601319,
-        "y": 2.4475648380683346
+        "x": 8.25106445751353,
+        "y": 2.09505617318927
       },
       "nextControl": null,
       "isLocked": false,
@@ -32,33 +32,16 @@
   "constraintZones": [],
   "eventMarkers": [
     {
-      "name": "Extend Intake",
-      "waypointRelativePos": 0.6,
+      "name": "New Event Marker",
+      "waypointRelativePos": 0.45,
       "command": {
-        "type": "sequential",
+        "type": "parallel",
         "data": {
           "commands": [
             {
               "type": "named",
               "data": {
                 "name": "Extend Intake"
-              }
-            }
-          ]
-        }
-      }
-    },
-    {
-      "name": "Shutdown Shooter",
-      "waypointRelativePos": 0.15,
-      "command": {
-        "type": "sequential",
-        "data": {
-          "commands": [
-            {
-              "type": "named",
-              "data": {
-                "name": "Shutdown Shooter"
               }
             }
           ]
@@ -74,13 +57,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": -173.3674853848614,
+    "rotation": -152.30052719194504,
     "rotateFast": false
   },
   "reversed": false,
   "folder": null,
   "previewStartingState": {
-    "rotation": 178.48409647934298,
+    "rotation": 145.72535609575115,
     "velocity": 0
   },
   "useDefaultConstraints": true
