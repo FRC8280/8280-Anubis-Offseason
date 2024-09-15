@@ -33,7 +33,7 @@ import frc.robot.subsystems.Intake;
 public class RobotContainer {
   public double m_TargetYaw = Constants.Vision.NoTarget;
   public boolean m_AutoAlign = false;
-  public boolean singleDriver = false;
+  public boolean singleDriver = true;
   public boolean demoMode = false;
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -260,7 +260,7 @@ public class RobotContainer {
                                     new InstantCommand(() -> m_Intake.ReverseIntake()),
                                     new InstantCommand(() -> m_Shooter.IntakeIndexer())))
 
-        //.andThen(new WaitCommand(0.2))//.46
+         //.andThen(new WaitCommand(0.2))//.46
         .andThen(new WaitUntilCommand(()->m_Shooter.getShooterHasNote()))
         .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()), //stop motors
             new InstantCommand(() -> m_Shooter.StopIndexMotor())))
@@ -278,8 +278,11 @@ public class RobotContainer {
     // Take the normal shot
     pointer.rightTrigger()
       .and(inTakeEmpty)  
-      .onTrue(new InstantCommand(() -> m_Shooter.SpinShootingMotorsDynamic()) // Turn on the shooter
-            .andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
+      .onTrue(
+              new InstantCommand(()->m_Shooter.PreShotAdjustment())
+            .andThen(new WaitUntilCommand(()->m_Shooter.PreShotClear()))
+             .andThen(new InstantCommand(() -> m_Shooter.SpinShootingMotorsDynamic())) // Turn on the shooter
+             .andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
              .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
                                         new InstantCommand(() ->m_Shooter.StartIndexMotor())))
             
@@ -361,6 +364,9 @@ public class RobotContainer {
       .and(inTakeEmpty)  
       //Todo: move the arm into the right position and wait until its ready. 
       .onTrue(new InstantCommand(()->m_Shooter.PivotAmpShot()) // Turn on the shooter
+            .andThen(new InstantCommand(()->m_Shooter.PreShotAdjustment()))
+            .andThen(new WaitUntilCommand(()->m_Shooter.PreShotClear()))
+
             .andThen(new InstantCommand(()->m_Shooter.SetAmpArmScore()))
             .andThen(new WaitCommand(0.7)) // get up to speed
             .andThen(new InstantCommand(() -> m_Shooter.SpinShootingMotorsBoth(Constants.Shooter.k_AmpTopRPM,Constants.Shooter.k_AmpBottomRPM)))

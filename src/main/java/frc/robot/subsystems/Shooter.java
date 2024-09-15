@@ -20,6 +20,7 @@ import frc.robot.Constants;
 public class Shooter extends SubsystemBase {
 
   private Timer m_EmergencyTimer;
+  private Timer m_PreShotTimer;
   private Timer m_BarClearTimer;
   private Timer m_AdjustmentTimer;
 
@@ -112,6 +113,8 @@ public class Shooter extends SubsystemBase {
     m_EmergencyTimer = new Timer();
     m_BarClearTimer = new Timer();
     m_AdjustmentTimer = new Timer();
+    m_PreShotTimer = new Timer();
+    
     m_AdjustmentTimer.reset();
     m_BarClearTimer.reset();
     m_BarClearTimer.start();
@@ -141,6 +144,7 @@ public class Shooter extends SubsystemBase {
 
     m_topMotor =
         new CANSparkFlex(Constants.Shooter.kTopCanId, CANSparkLowLevel.MotorType.kBrushless);
+    m_topMotor.restoreFactoryDefaults();
     m_topMotor.setInverted(false);
     m_topMotor.setSmartCurrentLimit(Constants.Shooter.kCurrentLimit);
     m_topMotor.setIdleMode(IdleMode.kBrake);
@@ -148,6 +152,7 @@ public class Shooter extends SubsystemBase {
 
     m_bottomMotor =
         new CANSparkFlex(Constants.Shooter.kBottomCanId, CANSparkLowLevel.MotorType.kBrushless);
+    m_bottomMotor.restoreFactoryDefaults();
     m_bottomMotor.setInverted(false);
     m_bottomMotor.setSmartCurrentLimit(Constants.Shooter.kCurrentLimit);
     m_bottomMotor.setIdleMode(IdleMode.kBrake);
@@ -277,15 +282,9 @@ public class Shooter extends SubsystemBase {
         m_EmergencyTimer.stop();
         return true;
       }  
-
-      /*if(  (m_topMotorEncoder.getVelocity() / m_TopShooterMotorSpeed ) < 0.95   )
-        return false;
-      if(   (m_bottomMotorEncoder.getVelocity() / m_BottomShooterMotorSpeed ) < 0.95 )
-        return false;*/
-      
       //Note change to fire when either roller hits 90% of target velocity
       if( ((m_topMotorEncoder.getVelocity() / m_TopShooterMotorSpeed ) >= 0.9) 
-      || ((m_bottomMotorEncoder.getVelocity() / m_BottomShooterMotorSpeed ) >= 0.9))
+      && ((m_bottomMotorEncoder.getVelocity() / m_BottomShooterMotorSpeed ) >= 0.9))
         return true;
       else
         return false;
@@ -462,18 +461,41 @@ public class Shooter extends SubsystemBase {
 
     public boolean getShooterNoteAdjusted() {
 
-    if(m_AdjustmentTimer.hasElapsed(0.50))  //Override don't go too long. 
+    if(m_AdjustmentTimer.hasElapsed(0.60))  //Override don't go too long. 
     {
        m_AdjustmentTimer.stop();
        m_AdjustmentTimer.reset();
        return true;
     }
 
-     if(distanceSensor.getRange() > Constants.Shooter.kNoteDetectionDistanceAdjusted)
+     if(distanceSensor.getRange() > Constants.Shooter.kNoteTooCloseShooters)
         return true;
       else 
         return false; 
   } 
+
+  public void PreShotAdjustment()
+  {
+    if(distanceSensor.getRange() > Constants.Shooter.kNoteTooCloseShooters)
+      return;
+    else
+      {
+        m_PreShotTimer.reset();
+        m_PreShotTimer.start();
+        m_indexMotor.set(-0.5);
+      }
+  }
+
+  public boolean PreShotClear()
+  {
+    if(m_PreShotTimer.hasElapsed(Constants.Shooter.kPreShotLimit))
+      return true;
+   
+    if(distanceSensor.getRange() > Constants.Shooter.kNoteTooCloseShooters)
+      return true;
+    else
+      return false;
+  }
 
   public boolean testAdjustedNote()
   {
@@ -699,12 +721,12 @@ public void ReverseIndexerLight()
 
     //
     SmartDashboard.putNumber("Shooter Sensors Distance", distanceSensor.getRange());
-    SmartDashboard.putNumber("Set Motor Speed", m_TopShooterMotorSpeed);
-    SmartDashboard.putNumber("Top Motor Speed", m_topMotorEncoder.getVelocity());
-    SmartDashboard.putNumber("Bottom Motor Speed", m_bottomMotorEncoder.getVelocity());
+    SmartDashboard.putNumber("Motor Speed", m_TopShooterMotorSpeed);
+    SmartDashboard.putNumber("Top Speed", m_topMotorEncoder.getVelocity());
+    SmartDashboard.putNumber("Bottom Speed", m_bottomMotorEncoder.getVelocity());
 
-    SmartDashboard.putNumber("Top Motor Percentage", (m_topMotorEncoder.getVelocity() / m_TopShooterMotorSpeed ));
-    SmartDashboard.putNumber("Bottom Motor Percentage", (m_bottomMotorEncoder.getVelocity() / m_BottomShooterMotorSpeed ));
+    SmartDashboard.putNumber("Top %", (m_topMotorEncoder.getVelocity() / m_TopShooterMotorSpeed ));
+    SmartDashboard.putNumber("Bottom %", (m_bottomMotorEncoder.getVelocity() / m_BottomShooterMotorSpeed ));
 
     
     //SmartDashboard.putNumber("Set Bottom Motor Speed", m_BottomShooterMotorSpeed);

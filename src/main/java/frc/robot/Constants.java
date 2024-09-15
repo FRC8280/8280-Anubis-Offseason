@@ -152,7 +152,9 @@ public final class Constants {
         public static final double k_AmpArmScore = 1.25;  //Todo increase this value
         public static final double k_ArmIntakeValue = 0.25;
         public static final double kNoteDetectionDistance = 145;//110;
-        public static final double kNoteDetectionDistanceAdjusted = 110;//110;
+        public static final double kNoteDetectionDistanceAdjusted = 110;
+        public static final double kNoteTooCloseShooters = 80.0;
+        public static final double kPreShotLimit = 0.5;
         
         public static final double k_RPMShooterTimeLimit = 2.5;
         //Tune this base distance value
@@ -161,9 +163,9 @@ public final class Constants {
         public static final double kBaseShooterElevation = k_SubWoofer;
 
         //Amp shot data
-        public static final double k_AmpShot = 0.32;//0.44;  //good amp shot angle: 11.7
-        public static final double k_AmpTopRPM = 900;
-        public static final double k_AmpBottomRPM = 1200;;
+        public static final double k_AmpShot = 0.36;// 0.32;
+        public static final double k_AmpTopRPM =  1800;//900;
+        public static final double k_AmpBottomRPM = 1200;//1200;;
         public static final double k_AmpArmHalfWayPoint = 6;
         public static final double k_AmpArmIntakePosition = 8;
 
