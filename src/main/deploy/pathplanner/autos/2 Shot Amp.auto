@@ -53,24 +53,6 @@
           "data": {
             "name": "Shutdown Shooter"
           }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Charge Center From Top"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Move back and Shoot"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shoot Note"
-          }
         }
       ]
     }

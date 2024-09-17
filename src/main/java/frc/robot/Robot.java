@@ -54,7 +54,7 @@ public PhotonTrackedTarget FindSpeakerTarget(List<PhotonTrackedTarget> targetLis
     m_robotContainer = new RobotContainer();
     m_robotContainer.drivetrain.getDaqThread().setThreadPriority(99);
     vision = new Vision();
-    m_robotContainer.FixArm();
+    //m_robotContainer.FixArm();
     // Do this in either robot or subsystem init
     SmartDashboard.putData("Field", m_field);
   }

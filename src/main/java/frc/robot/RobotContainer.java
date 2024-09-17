@@ -26,6 +26,7 @@ import frc.robot.commands.ShootCommand;
 //import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
+import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Intake;
@@ -48,7 +49,7 @@ public class RobotContainer {
   public final Climber m_Climber = Climber.getInstance();
   private final Shooter m_Shooter = Shooter.getInstance();
   private final Intake m_Intake = Intake.getInstance();
-  //private static final Blinkin m_blinkin = new Blinkin(0);
+  public static final Blinkin m_blinkin = new Blinkin(0);
 
   private final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
       .withDeadband(MaxSpeed * 0.1).withRotationalDeadband(MaxAngularRate * 0.1) // Add a 10% deadband
@@ -260,7 +261,7 @@ public class RobotContainer {
                                     new InstantCommand(() -> m_Intake.ReverseIntake()),
                                     new InstantCommand(() -> m_Shooter.IntakeIndexer())))
 
-         //.andThen(new WaitCommand(0.2))//.46
+        //.andThen(new WaitCommand(0.35))//.46
         .andThen(new WaitUntilCommand(()->m_Shooter.getShooterHasNote()))
         .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()), //stop motors
             new InstantCommand(() -> m_Shooter.StopIndexMotor())))
@@ -360,29 +361,28 @@ public class RobotContainer {
             .andThen(new InstantCommand(() -> m_Intake.goToStow()))); 
 
       /*New Amp Shot */
-      pointer.b() //Amp shot 
+      pointer.b() 
       .and(inTakeEmpty)  
-      //Todo: move the arm into the right position and wait until its ready. 
       .onTrue(new InstantCommand(()->m_Shooter.PivotAmpShot()) // Turn on the shooter
             .andThen(new InstantCommand(()->m_Shooter.PreShotAdjustment()))
             .andThen(new WaitUntilCommand(()->m_Shooter.PreShotClear()))
 
             .andThen(new InstantCommand(()->m_Shooter.SetAmpArmScore()))
-            .andThen(new WaitCommand(0.7)) // get up to speed
+            .andThen(new WaitCommand(0.25)) // get up to speed 0.7
             .andThen(new InstantCommand(() -> m_Shooter.SpinShootingMotorsBoth(Constants.Shooter.k_AmpTopRPM,Constants.Shooter.k_AmpBottomRPM)))
             .andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
              .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
                                         new InstantCommand(() ->m_Shooter.StartIndexMotor())))
             
-            .andThen(new WaitCommand(1.25)) // Wait for note to clear
+            .andThen(new WaitCommand(0.5)) // Wait for note to clear  1.25
             .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()),
                                        //new InstantCommand(() -> m_Shooter.ManualSetShooterSpeed(0)),
                                        new InstantCommand(() -> m_Shooter.OverrideShooterToZero()),
                                        new InstantCommand(() -> m_Shooter.StopIndexMotor())))
+            .andThen(new WaitCommand(0.25)) // get up to speed 0.7
             .andThen(new InstantCommand(()->m_Shooter.StowAmpArmIntake()))
             .andThen(new InstantCommand(() -> m_Shooter.pivotLoaded())));
-            //Todo: Add a return the Amp arm to original position
-
+      
 
       if (singleDriver == false){
       pointer.y()

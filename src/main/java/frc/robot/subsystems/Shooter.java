@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+
 import com.playingwithfusion.TimeOfFlight;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel;
@@ -38,13 +41,14 @@ public class Shooter extends SubsystemBase {
     kStowed
   }
 
-  private ampArmStates ampArmState = ampArmStates.kIntakePositionUp;
+  private ampArmStates ampArmState = ampArmStates.kStowed;
   //private boolean m_AmpArmActive = false;
   //private boolean m_StowAmpArm = false;
-  private double currentAmpArmPosition = Constants.Shooter.k_AmpArmScore;
+  private double currentAmpArmPosition = Constants.Shooter.k_AmpArmHalfWayPointAbs;
 
   private SparkPIDController m_ampPidController;
-  //private final SparkAbsoluteEncoder m_ampAbsoluteEncoder;
+  
+  private final SparkAbsoluteEncoder m_ampAbsoluteEncoder;
   private RelativeEncoder m_ampArmEncoder;
 
   private SparkPIDController m_PidController;
@@ -77,9 +81,9 @@ public class Shooter extends SubsystemBase {
   //private double currentAPivotPosition = Constats.Amp.[Insert here idk yet]
 
   //Amp Arm PID
-  private static final double k_AmpArmP =  0.05;
+  private static final double k_AmpArmP =  1;//2;
   private static final double k_AmpArmI = 0.0;
-  private static final double k_AmpArmD = 0.001;
+  private static final double k_AmpArmD = 0.01;//0.001
   private static final double k_AmpArmMaxOutput = 1;
   private static final double k_AmpArmMinOutput = -1;
   //private static final double kAmpArmIz = 0; 
@@ -138,10 +142,6 @@ public class Shooter extends SubsystemBase {
     m_pAbsoluteEncoder = m_sPivotMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
     m_PidController.setFeedbackDevice(m_pAbsoluteEncoder);
 
-    //mEncoder = m_sPivotMotor.getEncoder();
-    //mEncoder.setPosition(m_pAbsoluteEncoder.getPosition()*31.1904762 );  //seto to absolute encoder value * constant
-    //old number - 48.6229508
-
     m_topMotor =
         new CANSparkFlex(Constants.Shooter.kTopCanId, CANSparkLowLevel.MotorType.kBrushless);
     m_topMotor.restoreFactoryDefaults();
@@ -170,20 +170,21 @@ public class Shooter extends SubsystemBase {
       m_ampArmMotor.restoreFactoryDefaults();
     m_ampArmMotor.setInverted(false);
     m_ampArmMotor.setIdleMode(IdleMode.kCoast);
+    m_ampArmMotor.burnFlash();
 
     m_ampPidController = m_ampArmMotor.getPIDController();
     m_ampPidController.setP(k_AmpArmP);
     m_ampPidController.setI(k_AmpArmI);
     m_ampPidController.setD(k_AmpArmD);
-    //m_ampPidController.setIZone(kAmpArmIz);
-    //m_ampPidController.setFF(kAmpArmFF);
+    m_ampPidController.setIZone(0);
+    m_ampPidController.setFF(0);
     m_ampPidController.setOutputRange(k_AmpArmMinOutput, k_AmpArmMaxOutput);
-    m_ampArmMotor.burnFlash();
-
+    /*Replacing with absolute encoder*/
     m_ampArmEncoder = m_ampArmMotor.getEncoder();
     m_ampArmEncoder.setPosition(0);
-    //m_ampAbsoluteEncoder = m_ampArmMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
-    //m_ampPidController.setFeedbackDevice(m_ampAbsoluteEncoder);
+
+    m_ampAbsoluteEncoder = m_ampArmMotor.getAbsoluteEncoder(SparkAbsoluteEncoder.Type.kDutyCycle);
+    m_ampPidController.setFeedbackDevice(m_ampAbsoluteEncoder);
     
     m_TopPidController = m_topMotor.getPIDController();
     m_TopPidController.setP(k_sShooterMotorP);
@@ -387,7 +388,7 @@ public class Shooter extends SubsystemBase {
 
   public void SetAmpArmScore()
   {
-     currentAmpArmPosition = Constants.Shooter.k_AmpArmScore;  
+     currentAmpArmPosition = Constants.Shooter.k_AmpArmScorAbs;  
      //m_AmpArmActive = true;
      //m_StowAmpArm = false;
 
@@ -402,7 +403,7 @@ public class Shooter extends SubsystemBase {
     //m_AmpArmActive = true;
     //m_StowAmpArm = false;
     ampArmState = ampArmStates.kIntakePositionUp;
-    currentAmpArmPosition = Constants.Shooter.k_AmpArmIntakePosition;
+    currentAmpArmPosition = Constants.Shooter.k_AmpArmIntakePositionAbs;
   }
 
   public boolean IsArmInTakePosition()
@@ -416,7 +417,7 @@ public class Shooter extends SubsystemBase {
   public void StowAmpArmIntake()
   {
       ampArmState = ampArmStates.kStowed;
-      currentAmpArmPosition = Constants.Shooter.k_AmpArmHalfWayPoint;
+      currentAmpArmPosition = Constants.Shooter.k_AmpArmHalfWayPointAbs;
       //m_AmpArmActive = false;
       //m_StowAmpArm = true;
   }
@@ -655,6 +656,11 @@ public void ReverseIndexerLight()
     else
       return Constants.Shooter.k_SubWoofer;//0.247;
   }
+  public double GetAdjustedAbsAmpEncoder()
+  {
+    return m_ampAbsoluteEncoder.getPosition();
+  }
+
   @Override
   public void periodic() { 
     
@@ -671,27 +677,16 @@ public void ReverseIndexerLight()
           currentSPivotPosition = Constants.Shooter.k_WingShot;
     }   
 
-    /*if(m_AmpArmActive)
-      m_ampPidController.setReference(currentAmpArmPosition, CANSparkMax.ControlType.kPosition);
-    else if(m_StowAmpArm)
-    {
-      if(m_ampArmEncoder.getPosition() > Constants.Shooter.k_AmpArmHalfWayPoint)
-        ShutDownAmpArm();
-      else
-        m_ampPidController.setReference(currentAmpArmPosition, CANSparkMax.ControlType.kPosition);
-    }*/
-    /*new style */
-
-    if( (ampArmState == ampArmStates.kScoringPosition) || (ampArmState == ampArmStates.kIntakePositionUp))
+    //m_ampPidController.setReference(0.7, CANSparkMax.ControlType.kPosition);
+     if( (ampArmState == ampArmStates.kScoringPosition) || (ampArmState == ampArmStates.kIntakePositionUp))
         m_ampPidController.setReference(currentAmpArmPosition, CANSparkMax.ControlType.kPosition);
     else if(ampArmState == ampArmStates.kStowed)
     {
-        if(m_ampArmEncoder.getPosition() > Constants.Shooter.k_AmpArmHalfWayPoint)
+        if(GetAdjustedAbsAmpEncoder() > Constants.Shooter.k_AmpArmHalfWayPointAbs)
           ShutDownAmpArm();
         else
           m_ampPidController.setReference(currentAmpArmPosition, CANSparkMax.ControlType.kPosition);
     }
-
 
     m_PidController.setReference(currentSPivotPosition, CANSparkMax.ControlType.kPosition);
 
@@ -701,12 +696,9 @@ public void ReverseIndexerLight()
       m_BottomPidController.setReference(m_BottomShooterMotorSpeed, CANSparkFlex.ControlType.kVelocity);
     }
 
-    //SmartDashboard.putBoolean("Override status", m_Override);
     SmartDashboard.putNumber("Target Range", m_Range);
-    //SmartDashboard.putNumber("Sh/Top Motor Speed", m_topMotorEncoder.getVelocity());
-    //SmartDashboard.putNumber("Sh/Bottom Motor Speed", m_bottomMotorEncoder.getVelocity());
     SmartDashboard.putNumber("Pivot Position", m_pAbsoluteEncoder.getPosition()); //mEncoder.getPosition());
-    SmartDashboard.putNumber("Amp Arm Encoder", m_ampArmEncoder.getPosition()); //mEncoder.getPosition());
+    SmartDashboard.putNumber("Amp Arm Encoder", GetAdjustedAbsAmpEncoder()); //mEncoder.getPosition());
     
     String x = "nada";
     if(ampArmState == ampArmStates.kScoringPosition)
@@ -716,10 +708,7 @@ public void ReverseIndexerLight()
     else if (ampArmState == ampArmStates.kStowed)
       x = "Stowed Position";
     SmartDashboard.putString("AmpArmSTate", x);
-    //SmartDashboard.putBoolean("Amp Active", m_AmpArmActive);
-   
 
-    //
     SmartDashboard.putNumber("Shooter Sensors Distance", distanceSensor.getRange());
     SmartDashboard.putNumber("Motor Speed", m_TopShooterMotorSpeed);
     SmartDashboard.putNumber("Top Speed", m_topMotorEncoder.getVelocity());
@@ -727,12 +716,6 @@ public void ReverseIndexerLight()
 
     SmartDashboard.putNumber("Top %", (m_topMotorEncoder.getVelocity() / m_TopShooterMotorSpeed ));
     SmartDashboard.putNumber("Bottom %", (m_bottomMotorEncoder.getVelocity() / m_BottomShooterMotorSpeed ));
-
-    
-    //SmartDashboard.putNumber("Set Bottom Motor Speed", m_BottomShooterMotorSpeed);
-    //SmartDashboard.putNumber("******Calculated Pivot****** %f\n",Constants.Shooter.kAutoElevationConstant*(m_Range - Constants.Shooter.kBaseVisionDistance ) + Constants.Shooter.kBaseShooterElevation);
-
-   
 
     }
   }

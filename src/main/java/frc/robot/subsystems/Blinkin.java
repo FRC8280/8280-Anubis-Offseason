@@ -12,7 +12,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 //import com.revrobotics.CANSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-//import frc.robot.RobotContainer;
+import frc.robot.RobotContainer;
 
 public class Blinkin extends SubsystemBase {
 
@@ -58,10 +58,10 @@ public class Blinkin extends SubsystemBase {
   public void allianceColor() {
     boolean isRed = NetworkTableInstance.getDefault().getTable("FMSInfo").getEntry("IsRedAlliance").getBoolean(true);
     if (isRed == true){
-      //RobotContainer.m_blinkin.set(-0.01);
+      RobotContainer.m_blinkin.set(-0.01);
       System.out.println("led RED");
     } else {
-      //RobotContainer.m_blinkin.set(0.19);
+      RobotContainer.m_blinkin.set(0.19);
       System.out.println("led BLUE");
     }
   }

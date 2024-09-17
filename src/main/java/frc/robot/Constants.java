@@ -149,7 +149,6 @@ public final class Constants {
         public static final double k_ShooterPivotLoaded = 0.468;//25.67;
         public static final double k_ShooterPivotIncrement = 0.02;
         
-        public static final double k_AmpArmScore = 1.25;  //Todo increase this value
         public static final double k_ArmIntakeValue = 0.25;
         public static final double kNoteDetectionDistance = 145;//110;
         public static final double kNoteDetectionDistanceAdjusted = 110;
@@ -166,8 +165,12 @@ public final class Constants {
         public static final double k_AmpShot = 0.36;// 0.32;
         public static final double k_AmpTopRPM =  1800;//900;
         public static final double k_AmpBottomRPM = 1200;//1200;;
+        public static final double k_AmpArmScore = 1.25;  //Todo increase this value
+        public static final double k_AmpArmScorAbs = 0.535;  //Todo increase this value
         public static final double k_AmpArmHalfWayPoint = 6;
+        public static final double k_AmpArmHalfWayPointAbs = 0.83;// 0.723; //absolute encoder value
         public static final double k_AmpArmIntakePosition = 8;
+        public static final double k_AmpArmIntakePositionAbs = 0.797; //absolute encoder value
 
         public static final double k_FeedTopRPM = 3000;
         public static final double k_FeedBottomRPM = 5000;
