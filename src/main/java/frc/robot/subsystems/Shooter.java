@@ -649,9 +649,9 @@ public void ReverseIndexerLight()
     else if( (distance >= 1.35) && (distance <1.43) )
       return 0.50;//26.217;//+ + adjustment;
     else if( (distance >= 1.43) && (distance <1.46) ) //old
-      return 0.51;//26.759;// + adjustment;
-    else if( (distance >= 1.46) && (distance <1.49) )
       return 0.54;//26.759;// + adjustment;
+    else if( (distance >= 1.46) && (distance <1.49) )
+      return 0.55;//26.759;// + adjustment;
     else if( (distance >= 1.49) && (distance <1.53) )
       return 0.56;//26.759;// + adjustment;
     else if( (distance >= 1.52) && (distance <1.55) )

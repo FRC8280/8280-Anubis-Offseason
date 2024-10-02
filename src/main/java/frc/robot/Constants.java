@@ -69,7 +69,7 @@ public final class Constants {
 
     
         // Intake speeds
-        public static final double k_intakeSpeed = 0.7;
+        public static final double k_intakeSpeed = 0.9;
         public static final double k_ejectSpeed = -1;
         public static final double k_ejectSpeedNudge = -0.20;
         public static final double k_feedShooterSpeed = -0.5;
@@ -146,7 +146,7 @@ public final class Constants {
         public static final double k_WingShot = 0.68;//28.4;
         public static final double k_StageShot = 0.468;//20.5;
         public static final double k_FeedShot = 0.468;//20.5;
-        public static final double k_ShooterPivotLoaded = 0.468;//25.67;
+        public static final double k_ShooterPivotLoaded = 0.55;//0.468;
         public static final double k_ShooterPivotIncrement = 0.02;
         
         public static final double k_ArmIntakeValue = 0.25;

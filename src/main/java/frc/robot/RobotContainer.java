@@ -34,7 +34,7 @@ import frc.robot.subsystems.Intake;
 public class RobotContainer {
   public double m_TargetYaw = Constants.Vision.NoTarget;
   public boolean m_AutoAlign = false;
-  public boolean singleDriver = true;
+  public boolean singleDriver = false;
   public boolean demoMode = false;
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
@@ -141,7 +141,7 @@ public class RobotContainer {
    if(!m_AutoAlign || m_TargetYaw == Constants.Vision.NoTarget)
       return -driver.getRightX()* MaxAngularRate;
 
-    double Kp = -0.005f;
+    double Kp = -0.009f;//-0.005f;
     double min_command = 0.05f;
 
     double heading_error = -m_TargetYaw;

@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 15.67,
-      "y": 4.11
+      "x": 0.7050561319382253,
+      "y": 4.473539560488536
     },
     "rotation": 121.60750224624891
   },
@@ -24,13 +24,13 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "sequential",
           "data": {
             "commands": [
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Middle Note Source Side"
+                  "pathName": "Source Far Note Path"
                 }
               },
               {
@@ -45,13 +45,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Shoot Source Side"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.25
+            "pathName": "Source Note First Shot"
           }
         },
         {
@@ -61,15 +55,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "sequential",
           "data": {
-            "name": "Retract Intake"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Shutdown Shooter"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Pickup 2nd Source Note pt. 1"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Extend Intake"
+                }
+              }
+            ]
           }
         }
       ]

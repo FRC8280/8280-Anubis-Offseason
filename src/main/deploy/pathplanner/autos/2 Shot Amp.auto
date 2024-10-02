@@ -18,22 +18,9 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "path",
           "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Top Amp Note - Direct"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Extend Intake"
-                }
-              }
-            ]
+            "pathName": "Top Amp Note - Direct"
           }
         },
         {
@@ -52,6 +39,12 @@
           "type": "named",
           "data": {
             "name": "Shutdown Shooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Charge Center From Top"
           }
         }
       ]
