@@ -429,7 +429,7 @@ public class Shooter extends SubsystemBase {
      ampArmState = ampArmStates.kStowed;
      //m_AmpArmActive = false;
      //m_StowAmpArm = false;
-     currentAmpArmPosition = 0;  
+     currentAmpArmPosition = Constants.Shooter.k_AmpArmHalfWayPointAbs;  
      m_ampArmMotor.set(0.0);
   }
 
@@ -462,40 +462,63 @@ public class Shooter extends SubsystemBase {
 
     public boolean getShooterNoteAdjusted() {
 
-    if(m_AdjustmentTimer.hasElapsed(0.60))  //Override don't go too long. 
+    if(m_AdjustmentTimer.hasElapsed(Constants.Shooter.kPreShotLimit))  //Override don't go too long. 
     {
        m_AdjustmentTimer.stop();
        m_AdjustmentTimer.reset();
+       m_indexMotor.set(0);
        return true;
     }
-
-     if(distanceSensor.getRange() > Constants.Shooter.kNoteTooCloseShooters)
-        return true;
-      else 
-        return false; 
+   else
+      return false;
+/* 
+    if(distanceSensor.getRange() >= Constants.Shooter.kNoteTooCloseShooters)
+      return true;
+    else 
+      return false;  */
   } 
+
+  public boolean preShotClear = true;
 
   public void PreShotAdjustment()
   {
     if(distanceSensor.getRange() > Constants.Shooter.kNoteTooCloseShooters)
+    { 
+      preShotClear = true;
       return;
+    }
     else
       {
+        preShotClear = false;
         m_PreShotTimer.reset();
         m_PreShotTimer.start();
-        m_indexMotor.set(-0.5);
+        m_indexMotor.set(-0.4);
       }
   }
 
   public boolean PreShotClear()
   {
+    if(preShotClear)
+      return true;
+
     if(m_PreShotTimer.hasElapsed(Constants.Shooter.kPreShotLimit))
+    {
+      m_PreShotTimer.stop();
+       m_PreShotTimer.reset();
+      m_indexMotor.set(0);
       return true;
-   
-    if(distanceSensor.getRange() > Constants.Shooter.kNoteTooCloseShooters)
-      return true;
-    else
-      return false;
+    }
+   else
+    return false;
+    
+    /* 
+  if(distanceSensor.getRange() > Constants.Shooter.kNoteTooCloseShooters)
+  {
+    m_indexMotor.set(0);
+    return true;
+  }
+   else
+    return false; */
   }
 
   public boolean testAdjustedNote()
@@ -641,13 +664,13 @@ public void ReverseIndexerLight()
       return 0.56;//26.759;// + adjustment;
     else if( (distance >= 1.64) && (distance <1.67) )
       return 0.56;//26.759;// + adjustment;
-   /* else if( (distance >= 1.67) && (distance <1.70) )
-      return 0.56;//26.759;// + adjustment;
-    else if( (distance >= 1.70) && (distance <1.73) )
-      return 0.56;//26.759;// + adjustment;
-    else if( (distance >= 1.73) && (distance <1.76) )
-      return 0.56;//26.759;// + adjustment;
-    else if( (distance >= 1.76) && (distance <1.79) )
+   else if( (distance >= 1.67) && (distance <1.74) )
+      return 0.58;//26.759;// + adjustment;
+    else if( (distance >= 1.74) && (distance <1.82) )
+      return 0.6;//26.759;// + adjustment;
+    else if( (distance >= 1.82) && (distance <1.92) )
+      return 0.62;//26.759;// + adjustment;
+    /*else if( (distance >= 1.76) && (distance <1.79) )
       return 0.56;//26.759;// + adjustment;
     else if( (distance >= 1.79) && (distance <1.82) )
       return 0.56;//26.759;// + adjustment;

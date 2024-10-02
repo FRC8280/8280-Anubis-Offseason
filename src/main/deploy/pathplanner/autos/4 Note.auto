@@ -43,12 +43,6 @@
           }
         },
         {
-          "type": "wait",
-          "data": {
-            "waitTime": 1.25
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Shoot Note"
@@ -98,7 +92,7 @@
               {
                 "type": "path",
                 "data": {
-                  "pathName": "Move Back Speaker"
+                  "pathName": "Bottom Note Aim"
                 }
               },
               {
@@ -139,12 +133,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
           }
         },
         {

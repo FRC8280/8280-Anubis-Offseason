@@ -112,7 +112,7 @@ public final class Constants {
 
         public static final double ampScoreHeight = 191;
         public static final double cruitseHeight = 57;
-        public static final double climberPower = 0.6;
+        public static final double climberPower = 0.9;
     }
 
     public static final class Shooter {
@@ -152,8 +152,8 @@ public final class Constants {
         public static final double k_ArmIntakeValue = 0.25;
         public static final double kNoteDetectionDistance = 145;//110;
         public static final double kNoteDetectionDistanceAdjusted = 110;
-        public static final double kNoteTooCloseShooters = 80.0;
-        public static final double kPreShotLimit = 0.5;
+        public static final double kNoteTooCloseShooters = 65;//80.0;
+        public static final double kPreShotLimit = 0.17;
         
         public static final double k_RPMShooterTimeLimit = 2.5;
         //Tune this base distance value

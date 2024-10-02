@@ -199,6 +199,11 @@ public class RobotContainer {
     Trigger rightStickUsed = new Trigger( ()-> this.rightStickUsed());
     rightStickUsed.onTrue(new InstantCommand(() -> DisableAutoAlign()));
 
+    
+    Trigger noteDetectedAnywhere = new Trigger( ()-> m_Shooter.getShooterHasNote() ||m_Intake.getIntakeHasNote());
+    noteDetectedAnywhere.onTrue(new InstantCommand(()->m_blinkin.set(0.77)));
+   noteDetectedAnywhere.onFalse(new InstantCommand(()->m_blinkin.set(0.61)));
+
     //Original breaking code from CTRE
     /*joystick.a().whileTrue(drivetrain.applyRequest(() -> brake));
     joystick.b().whileTrue(drivetrain
@@ -207,10 +212,6 @@ public class RobotContainer {
     // reset the field-centric heading on left bumper press
     driver.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldRelative()));
     drivetrain.registerTelemetry(logger::telemeterize);
-
-    //Hat adjustment at low speed. 
-    //joystick.pov(0).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(0.5).withVelocityY(0)));
-    //joystick.pov(180).whileTrue(drivetrain.applyRequest(() -> forwardStraight.withVelocityX(-0.5).withVelocityY(0)));
 
     /* Bindings for drivetrain characterization */
     /* These bindings require multiple buttons pushed to swap between quastatic and dynamic */
@@ -228,16 +229,7 @@ public class RobotContainer {
      * .onFalse(new InstantCommand(() -> s_Swerve.NormalSpeed()));
      */
 
-    //Operator Commands
-    //Todo Xavier are you using these?
-    /*Trigger safety = new Trigger( () -> ( (operator.getLeftX() > 0.75) || (operator.getLeftY() > 0.75)) );
-      safety.whileTrue(new InstantCommand(()->m_Shooter.SetShooterAngle(35)));
-
-    operator.back()
-      .onTrue(Commands.parallel(new InstantCommand(() -> m_Shooter.DisableOverride()),
-            new InstantCommand(() -> m_Climber.SetClimberCruise())));*/
-      
-    // Operator Commands
+    //Operator Commands  
     pointer.leftTrigger() // intake note
         .onTrue(Commands.parallel(new InstantCommand(()->m_Shooter.SetAmpArmIntake()),new InstantCommand(() -> m_Intake.goToGround()),
             new InstantCommand(() -> m_Shooter.pivotLoaded())));
@@ -373,6 +365,7 @@ public class RobotContainer {
             .andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
              .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
                                         new InstantCommand(() ->m_Shooter.StartIndexMotor())))
+                                         
             
             .andThen(new WaitCommand(0.5)) // Wait for note to clear  1.25
             .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()),
@@ -399,6 +392,9 @@ public class RobotContainer {
       .andThen(new InstantCommand(() -> m_Shooter.pivotLoaded()))
       );
       }
+
+
+      
   }
 
 
