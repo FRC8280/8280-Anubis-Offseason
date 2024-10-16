@@ -86,28 +86,9 @@
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.0
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Move Back Speaker"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Retract Intake"
-                }
-              }
-            ]
+            "pathName": "Fire Bottom"
           }
         },
         {
@@ -117,34 +98,22 @@
           }
         },
         {
-          "type": "named",
-          "data": {
-            "name": "Shutdown Shooter"
-          }
-        },
-        {
           "type": "parallel",
           "data": {
             "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Alt Move Top Note - Red"
+                }
+              },
               {
                 "type": "named",
                 "data": {
                   "name": "Extend Intake"
                 }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "New Move Top Note"
-                }
               }
             ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.5
           }
         },
         {

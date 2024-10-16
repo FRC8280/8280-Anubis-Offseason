@@ -38,7 +38,7 @@ public class RobotContainer {
   public boolean demoMode = false;
 
   private double MaxSpeed = TunerConstants.kSpeedAt12VoltsMps; // kSpeedAt12VoltsMps desired top speed
-  private double MaxAngularRate = 3.0 * Math.PI; // 3/4 of a rotation per second max angular velocity
+  private double MaxAngularRate = 6.0 * Math.PI; // 3/4 of a rotation per second max angular velocity
 
   /* Setting up bindings for necessary control of the swerve drive platform */
   private final CommandXboxController driver = new CommandXboxController(0); // My joystick
@@ -264,12 +264,14 @@ public class RobotContainer {
 
         .andThen(new InstantCommand(() -> m_Shooter.StopIndexMotor())) // stop the adjustment
         .andThen(new InstantCommand(() -> m_Shooter.DisableOverride())) // disable override
+        //.andThen(new InstantCommand(() -> m_Shooter.ShotDelayStart())) // disable override
         );
 
     Trigger inTakeEmpty = new Trigger(()->m_Intake.intakeEmpty());
-
+    //Trigger shotDelay = new Trigger(()->m_Shooter.OkToShoot());
     // Take the normal shot
     pointer.rightTrigger()
+      //.and(shotDelay)
       .and(inTakeEmpty)  
       .onTrue(
               new InstantCommand(()->m_Shooter.PreShotAdjustment())
@@ -291,25 +293,27 @@ public class RobotContainer {
     pointer.rightTrigger()
       .and(inTakeNotEmpty)  
       //Run the transfer
-        .onTrue(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
+        .onTrue(Commands.parallel(//new InstantCommand(() -> m_Shooter.ShutDownAmpArm()),
+                                    new InstantCommand(() -> m_Intake.ReverseIntake()),
                                     new InstantCommand(() -> m_Shooter.IntakeIndexer()))
 
-        .andThen(new WaitUntilCommand(()->m_Shooter.getShooterHasNote()))  //late
-        //.andThen(new WaitCommand(0.45))
-
+        //.andThen(new WaitCommand(0.35))//.46
+        .andThen(new WaitUntilCommand(()->m_Shooter.getShooterHasNote()))
         .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()), //stop motors
             new InstantCommand(() -> m_Shooter.StopIndexMotor())))
 
         .andThen(new InstantCommand(() -> m_Shooter.AdjustIndexPostIntake())) // back the note up using sensor
-        .andThen(new WaitUntilCommand(()->m_Shooter.getShooterNoteAdjusted())) //late
-        //.andThen(new WaitCommand(0.45)) // Simple timer
-        
+        //.andThen(new WaitCommand(0.45)) // Simple timer  //37
+        .andThen(new WaitUntilCommand(()->m_Shooter.getShooterNoteAdjusted()))  //Todo test this late
+
         .andThen(new InstantCommand(() -> m_Shooter.StopIndexMotor())) // stop the adjustment
         .andThen(new InstantCommand(() -> m_Shooter.DisableOverride())) // disable override
         
       //Normal shoot
-      .andThen(new InstantCommand(() -> m_Shooter.SpinShootingMotorsDynamic()) // Turn on the shooter
-            .andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
+       .andThen(  new InstantCommand(()->m_Shooter.PreShotAdjustment()))
+            .andThen(new WaitUntilCommand(()->m_Shooter.PreShotClear()))
+             .andThen(new InstantCommand(() -> m_Shooter.SpinShootingMotorsDynamic())) // Turn on the shooter
+             .andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
              .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
                                         new InstantCommand(() ->m_Shooter.StartIndexMotor())))
             
@@ -317,7 +321,8 @@ public class RobotContainer {
             .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()),
                                        new InstantCommand(() -> m_Shooter.OverrideShooterToZero()),
                                        new InstantCommand(() -> m_Shooter.StopIndexMotor())))
-            .andThen(new InstantCommand(() -> m_Shooter.pivotLoaded()))));
+            .andThen(new InstantCommand(() -> m_Shooter.pivotLoaded())));
+
     
     //Eject the note
     pointer.rightBumper()
@@ -330,7 +335,9 @@ public class RobotContainer {
                                   new InstantCommand(() -> m_Shooter.PivotFlat())))
         .onFalse(new InstantCommand(() -> m_Climber.NoPower()));
     pointer.povUp()
-        .onTrue(Commands.parallel(new InstantCommand(() -> m_Climber.IncreasePower()),
+    //
+        .onTrue(Commands.parallel(//new InstantCommand(()->m_Shooter.SetAmpArmScore()),
+                                  new InstantCommand(() -> m_Climber.IncreasePower()),
                                   new InstantCommand(() -> m_Shooter.PivotFlat())))
         .onFalse(new InstantCommand(() -> m_Climber.NoPower()));
 
@@ -380,15 +387,18 @@ public class RobotContainer {
       if (singleDriver == false){
       pointer.y()
         .onTrue(new InstantCommand(()-> m_Shooter.FeedShot())
-      .andThen(new WaitCommand(1.0))
-      .andThen(new InstantCommand(()-> m_Shooter.SpinShootingMotorsBoth(Constants.Shooter.k_FeedTopRPM,Constants.Shooter.k_FeedBottomRPM)))
-      .andThen(new WaitCommand(1))       //Wait for note to clear
-      .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntakeNudge()),
-                                        new InstantCommand(() ->m_Shooter.StartIndexMotor())))  
-      .andThen(new WaitCommand(2))       //Wait for note to clear
-      .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()),
-                                 new InstantCommand(() ->m_Shooter.OverrideShooterToZero()),
-                                 new InstantCommand(() ->m_Shooter.StopIndexMotor())))
+        .andThen(  new InstantCommand(()->m_Shooter.PreShotAdjustment()))
+        .andThen(new WaitUntilCommand(()->m_Shooter.PreShotClear()))
+     
+        .andThen(new InstantCommand(()-> m_Shooter.SpinShootingMotorsBoth(Constants.Shooter.k_FeedTopRPM,Constants.Shooter.k_FeedBottomRPM)))
+        .andThen(new WaitUntilCommand(()->m_Shooter.AtTargetSpeed()))
+             .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.ReverseIntake()),
+                                        new InstantCommand(() ->m_Shooter.StartIndexMotor())))
+            
+            .andThen(new WaitCommand(0.25)) // Wait for note to clear
+            .andThen(Commands.parallel(new InstantCommand(() -> m_Intake.StopIntakeMotor()),
+                                       new InstantCommand(() -> m_Shooter.OverrideShooterToZero()),
+                                       new InstantCommand(() -> m_Shooter.StopIndexMotor())))
       .andThen(new InstantCommand(() -> m_Shooter.pivotLoaded()))
       );
       }

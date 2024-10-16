@@ -116,6 +116,7 @@ public final class Constants {
     }
 
     public static final class Shooter {
+        public static final double kShotDelayTmer = 0.3;
         public static final double kAutoShotDuration = 0.75;
         public static final int kTopCanId = 16;
         public static final int kBottomCanId = 17;
@@ -145,7 +146,7 @@ public final class Constants {
         public static final double k_SubWooferAuton = 0.203;//13.1;
         public static final double k_WingShot = 0.68;//28.4;
         public static final double k_StageShot = 0.468;//20.5;
-        public static final double k_FeedShot = 0.468;//20.5;
+        public static final double k_FeedShot = 0.36;//20.5;
         public static final double k_ShooterPivotLoaded = 0.55;//0.468;
         public static final double k_ShooterPivotIncrement = 0.02;
         
@@ -163,8 +164,8 @@ public final class Constants {
 
         //Amp shot data
         public static final double k_AmpShot = 0.36;// 0.32;
-        public static final double k_AmpTopRPM =  1800;//900;
-        public static final double k_AmpBottomRPM = 1200;//1200;;
+        public static final double k_AmpTopRPM =  2250;//1800;
+        public static final double k_AmpBottomRPM = 1500;//1200;
         public static final double k_AmpArmScore = 1.25;  //Todo increase this value
         public static final double k_AmpArmScorAbs = 0.535;  //Todo increase this value
         public static final double k_AmpArmHalfWayPoint = 6;
@@ -172,8 +173,8 @@ public final class Constants {
         public static final double k_AmpArmIntakePosition = 8;
         public static final double k_AmpArmIntakePositionAbs = 0.797; //absolute encoder value
 
-        public static final double k_FeedTopRPM = 3000;
-        public static final double k_FeedBottomRPM = 5000;
+        public static final double k_FeedTopRPM = 2000;
+        public static final double k_FeedBottomRPM = 2000;
 
         //public static final double kArmStowed = [idk find the value later]
       }

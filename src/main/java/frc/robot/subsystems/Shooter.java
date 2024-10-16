@@ -26,6 +26,7 @@ public class Shooter extends SubsystemBase {
   private Timer m_PreShotTimer;
   private Timer m_BarClearTimer;
   private Timer m_AdjustmentTimer;
+  private Timer m_ShotDelay;
 
   private CANSparkFlex m_topMotor;
   private CANSparkFlex m_bottomMotor;
@@ -118,7 +119,9 @@ public class Shooter extends SubsystemBase {
     m_BarClearTimer = new Timer();
     m_AdjustmentTimer = new Timer();
     m_PreShotTimer = new Timer();
+    m_ShotDelay = new Timer();
     
+    m_ShotDelay.reset();
     m_AdjustmentTimer.reset();
     m_BarClearTimer.reset();
     m_BarClearTimer.start();
@@ -211,6 +214,22 @@ public class Shooter extends SubsystemBase {
 
     //m_Indexing = false;
     lastPivot = Constants.Shooter.k_ShooterPivotLoaded;
+  }
+
+  public void ShotDelayStart()
+  {
+    m_ShotDelay.reset();
+    m_ShotDelay.start();
+  }
+
+  public boolean OkToShoot()
+  {
+    return true;
+    /*
+    if(m_ShotDelay.hasElapsed(Constants.Shooter.kShotDelayTmer))
+      return true;
+    else 
+      return false; */
   }
 
   public void EnableOverride()
