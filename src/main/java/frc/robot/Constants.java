@@ -54,6 +54,7 @@ public final class Constants {
         // Motors
         public static final int kIntakeMotorId = 12; //todo: change to ours
         public static final int kPivotMotorId = 13; //todo: change to ours
+        public static final int kLaserCanID = 31;
       
         // Absolute encoder offset
         public static final double k_pivotEncoderOffset = 0.166842; // Straight up, sketchy to reset to "up"
@@ -96,6 +97,8 @@ public final class Constants {
         public static final double kSoftLimitForward = 4.77;//4.6 or 143.878
 
         public static final double kArmZeroCosineOffset = - Math.PI / 6; //radians to add to converted arm position to get real-world arm position (starts at ~30deg angle)
+
+        public static final double kIntakeBarDistanceMM = 35;
       }
       
 

@@ -6,6 +6,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 import com.playingwithfusion.TimeOfFlight;
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.ConfigurationFailedException;
 
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -27,6 +29,7 @@ public class Intake extends SubsystemBase {
   private static final double kFF = 0; 
   private double currentPivotPosition = Constants.Intake.k_pivotAngleStow;
   public double maxRPM, maxVel, minVel, maxAcc, allowedErr;
+  private LaserCan IntakeBarSensor;
   
   //private final SparkAbsoluteEncoder m_AbsolutePivotEncoder; 
 
@@ -35,7 +38,7 @@ public class Intake extends SubsystemBase {
   /*-------------------------------- Private instance variables ---------------------------------*/
   private static Intake mInstance;
   private PeriodicIO m_periodicIO;
-
+  private boolean PivotNeedsFixing = false;
   
   public static Intake getInstance() {
     if (mInstance == null) {
@@ -93,6 +96,8 @@ public class Intake extends SubsystemBase {
     distanceSensor = new TimeOfFlight(0);
     m_IntakeState = IntakeState.NONE;
 
+    IntakeBarSensor = new LaserCan(31);
+
   }
 
   private static class PeriodicIO {
@@ -127,14 +132,54 @@ public class Intake extends SubsystemBase {
 
   @Override
   public void periodic() {
-    checkAutoTasks();  
-    
-    //Intake position PID
-    m_pidController.setReference(currentPivotPosition, CANSparkMax.ControlType.kPosition);
+
+    if((m_IntakeState == IntakeState.NONE) && isPivotStowed())
+    {
+      if(PivotNeedsFixing && !IsIntakeBarTrulyDown() )
+      {
+        //Turn on intake pivot motorturnof
+        mPivotMotor.set(0.05);
+      }
+      else if(PivotNeedsFixing && IsIntakeBarTrulyDown())
+      {
+        //Turn motor off
+        mPivotMotor.set(0);
+
+        //Set motor encoder to 0
+        m_encoder.setPosition(0);
+        
+        PivotNeedsFixing = false;
+      }
+      else if(!PivotNeedsFixing && isPivotStowed() && !IsIntakeBarTrulyDown())
+      {
+        PivotNeedsFixing = true;
+      }
+    }
+    else
+    {
+      checkAutoTasks();  
+      //Intake position PID
+      m_pidController.setReference(currentPivotPosition, CANSparkMax.ControlType.kPosition); 
+    }
     mIntakeMotor.set(intakeStateToSpeed(m_IntakeState));  //set the intake speed. 
     outputTelemetry();
-  }
 
+ 
+      /*checkAutoTasks();  
+      //Intake position PID
+      m_pidController.setReference(currentPivotPosition, CANSparkMax.ControlType.kPosition);
+      mIntakeMotor.set(intakeStateToSpeed(m_IntakeState));  //set the intake speed. 
+      outputTelemetry();*/
+  }
+  
+  public boolean IsIntakeBarTrulyDown()
+  {
+    LaserCan.Measurement measurement = IntakeBarSensor.getMeasurement();
+    if(measurement.distance_mm <= Constants.Intake.kIntakeBarDistanceMM)
+      return true;
+    else
+      return false;
+  }
    private void checkAutoTasks() {
     // If the intake is set to GROUND, and the intake has a note, and the pivot is
     // close to it's target
@@ -177,6 +222,10 @@ public class Intake extends SubsystemBase {
   }
 
   public void ejectNote(){
+    
+    if(PivotNeedsFixing)
+      PivotNeedsFixing = false;
+
     currentPivotPosition = Constants.Intake.k_pivotAngleAmp;
     if(m_encoder.getPosition() < -20)
         ReverseIntake();
@@ -217,8 +266,12 @@ public class Intake extends SubsystemBase {
 
  // @Override
   public void outputTelemetry() {
+    LaserCan.Measurement measurement = IntakeBarSensor.getMeasurement();
+
     SmartDashboard.putNumber("Intake Distance", distanceSensor.getRange());
-    SmartDashboard.putNumber("Intake position",m_encoder.getPosition()) ;/* 
+    SmartDashboard.putNumber("Intake Position",m_encoder.getPosition()) ;
+    SmartDashboard.putNumber("Intake Sensor Bar", measurement.distance_mm);
+    /* 
     putNumber("Pivot Current", mPivotMotor.getOutputCurrent());
     putNumber("Pivot Speed",m_encoder.getVelocity());
     putNumber("Pivot movement status",Math.abs(m_encoder.getPosition() - Constants.Intake.k_pivotAngleStow));*/
@@ -245,6 +298,9 @@ public class Intake extends SubsystemBase {
   // Pivot helper functions
   public void goToGround() {
     
+    if(PivotNeedsFixing)
+      PivotNeedsFixing = false;
+
     m_TransferOverride = false;
     System.out.printf("******Going to ground turning intake on******");
     if(getIntakeHasNote())  //Don't do anything if there's already a note. 
